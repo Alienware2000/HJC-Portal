@@ -120,10 +120,10 @@ function NavContent({
                     href={item.href}
                     onClick={onNavigate}
                     className={cn(
-                      "flex items-center gap-2.5 rounded-lg px-2.5 py-[7px] text-sm transition-all duration-100",
+                      "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-all duration-150 focus-visible:ring-2 focus-visible:ring-white/20 focus:outline-none",
                       isActive
                         ? "bg-white/[0.12] text-white font-medium"
-                        : "text-white/40 hover:text-white/70 hover:bg-white/[0.05]"
+                        : "text-white/50 hover:text-white/80 hover:bg-white/[0.06]"
                     )}
                   >
                     <item.icon className={cn("h-[15px] w-[15px] shrink-0", isActive ? "text-white" : "")} />
@@ -152,7 +152,8 @@ function NavContent({
           <button
             onClick={handleLogout}
             disabled={loggingOut}
-            className="p-1.5 rounded-md text-white/20 hover:text-white/50 hover:bg-white/[0.05] transition-colors shrink-0"
+            aria-label="Sign out"
+            className="p-2 rounded-md text-white/30 hover:text-white/60 hover:bg-white/[0.08] focus-visible:ring-2 focus-visible:ring-white/20 focus:outline-none transition-all shrink-0"
           >
             {loggingOut ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <LogOut className="h-3.5 w-3.5" />}
           </button>

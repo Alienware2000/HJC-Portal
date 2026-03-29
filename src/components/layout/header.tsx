@@ -55,7 +55,7 @@ export function Header({ role, eventName }: HeaderProps) {
     <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-gray-200/60">
       <div className="flex items-center justify-between h-[52px] px-5 lg:px-8">
         <div className="flex items-center gap-2 text-sm pl-10 lg:pl-0">
-          <span className="text-gray-400">{BREADCRUMB_ROOT[role]}</span>
+          <span className="text-gray-500">{BREADCRUMB_ROOT[role]}</span>
           <span className="text-gray-300">/</span>
           <span className="font-medium text-gray-900">{pageTitle}</span>
         </div>
