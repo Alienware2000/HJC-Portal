@@ -286,7 +286,7 @@ export function ImportWizard() {
             </div>
           )}
         </div>
-        <button onClick={reset} className="h-9 px-4 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition-all">
+        <button onClick={reset} className="h-10 px-4 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 active:bg-gray-950 focus-visible:ring-2 focus-visible:ring-ring/50 transition-all">
           Import Another File
         </button>
       </div>

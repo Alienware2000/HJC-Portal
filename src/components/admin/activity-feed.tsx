@@ -19,7 +19,7 @@ export function ActivityFeed({ entries, compact = false }: { entries: ChangeLogE
           <FileText className="h-5 w-5 text-gray-300" />
         </div>
         <p className="text-sm font-medium text-gray-900">No activity yet</p>
-        <p className="text-[13px] text-gray-400 mt-1">Changes will appear here as members update itineraries.</p>
+        <p className="text-[13px] text-gray-500 mt-1">Changes will appear here as members update itineraries.</p>
       </div>
     );
   }

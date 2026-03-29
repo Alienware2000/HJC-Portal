@@ -18,7 +18,7 @@ export function MemberDetailView({ member, backHref, backLabel }: MemberDetailVi
 
   return (
     <div className="space-y-6">
-      <Link href={backHref} className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-600 transition-colors">
+      <Link href={backHref} className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 focus-visible:ring-2 focus-visible:ring-ring/50 rounded-md px-1 -mx-1 transition-colors">
         <ArrowLeft className="h-3.5 w-3.5" /> {backLabel}
       </Link>
 
@@ -56,7 +56,7 @@ export function MemberDetailView({ member, backHref, backLabel }: MemberDetailVi
                     </div>
                     <div>
                       <span className="text-sm font-semibold text-gray-900">{pm.name as string}</span>
-                      <span className="ml-2 text-[13px] text-gray-400 capitalize">{pm.relationship as string}</span>
+                      <span className="ml-2 text-[13px] text-gray-500 capitalize">{pm.relationship as string}</span>
                     </div>
                   </div>
                   {it && <CompletionBadge pct={Number(it.completion_pct ?? 0)} />}
@@ -68,13 +68,13 @@ export function MemberDetailView({ member, backHref, backLabel }: MemberDetailVi
                       if (value === null || value === undefined || value === "" || value === false) return null;
                       return (
                         <div key={field} className="flex gap-1.5">
-                          <span className="text-gray-400 shrink-0">{label}:</span>
+                          <span className="text-gray-500 shrink-0">{label}:</span>
                           <span className="text-gray-700 font-medium">{typeof value === "boolean" ? "Yes" : Array.isArray(value) ? value.join(", ") : String(value)}</span>
                         </div>
                       );
                     })}
                     {Object.entries(FIELD_LABELS).every(([f]) => { const v = it[f]; return v === null || v === undefined || v === "" || v === false; }) && (
-                      <p className="text-gray-400 italic col-span-full">No itinerary details yet.</p>
+                      <p className="text-gray-500 italic col-span-full">No itinerary details yet.</p>
                     )}
                   </div>
                 )}
