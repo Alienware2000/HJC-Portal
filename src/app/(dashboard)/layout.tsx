@@ -13,11 +13,18 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const userName = user.user_metadata?.full_name as string | null;
   const userEmail = user.email || null;
 
+  // Fetch active event for header display
+  const { data: event } = await supabase
+    .from("events")
+    .select("name")
+    .eq("is_active", true)
+    .single();
+
   return (
     <div className="min-h-svh bg-[#f4f5f7]">
       <Sidebar role={role} userName={userName} userEmail={userEmail} />
       <div className="lg:pl-[240px]">
-        <Header role={role} />
+        <Header role={role} eventName={event?.name || null} />
         <main className="px-5 py-6 lg:px-8 max-w-5xl">
           {children}
         </main>

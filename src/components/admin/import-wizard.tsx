@@ -73,11 +73,16 @@ export function ImportWizard() {
 
     startTransition(async () => {
       setStep("importing");
-      const res = await importMembers(
-        valid as { board_member_name: string; [key: string]: unknown }[]
-      );
-      setResult(res);
-      setStep("results");
+      try {
+        const res = await importMembers(
+          valid as { board_member_name: string; [key: string]: unknown }[]
+        );
+        setResult(res);
+        setStep("results");
+      } catch {
+        toast.error("Import failed unexpectedly. Please try again.");
+        setStep("preview");
+      }
     });
   };
 

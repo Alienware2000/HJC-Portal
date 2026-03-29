@@ -144,7 +144,7 @@ export function ItineraryForm({ itinerary, personName, backHref }: ItineraryForm
           </div>
 
           {/* Save indicator */}
-          <div className="flex items-center gap-1.5 text-sm text-gray-400 shrink-0">
+          <div className="flex items-center gap-1.5 text-sm text-gray-400 shrink-0" role="status" aria-live="polite">
             {savingField ? (
               <><Loader2 className="h-3.5 w-3.5 animate-spin" /><span>Saving...</span></>
             ) : lastSaved ? (

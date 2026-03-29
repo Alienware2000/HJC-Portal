@@ -85,11 +85,27 @@ export async function updateItineraryFields(
     return { error: "Invalid field data" };
   }
 
+  // Strip computed and system fields — defense-in-depth
+  const {
+    completion_pct: _cp,
+    id: _id,
+    party_member_id: _pm,
+    board_member_id: _bm,
+    event_id: _ev,
+    created_at: _ca,
+    updated_at: _ua,
+    ...safeData
+  } = parseResult.data as Record<string, unknown>;
+
+  if (Object.keys(safeData).length === 0) {
+    return { error: "No valid fields to update" };
+  }
+
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("itineraries")
-    .update(parseResult.data)
+    .update(safeData)
     .eq("id", itineraryId)
     .select("completion_pct")
     .single();

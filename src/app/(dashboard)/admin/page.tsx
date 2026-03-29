@@ -36,6 +36,28 @@ export default async function AdminDashboardPage() {
         <Stat label="Changes (24h)" value={stats.recentChanges} icon={Activity} color="purple" />
       </div>
 
+      {/* Getting started guidance when no members */}
+      {stats.totalMembers === 0 && (
+        <div className="rounded-xl bg-white p-6 shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_2px_4px_rgba(0,0,0,0.05),0_12px_24px_rgba(0,0,0,0.05)]">
+          <h3 className="text-[15px] font-semibold text-gray-900 mb-2">Getting Started</h3>
+          <p className="text-sm text-gray-500 mb-4">No board members yet. Here&apos;s how to get started:</p>
+          <div className="space-y-2 text-sm">
+            <div className="flex items-center gap-2.5">
+              <span className="h-5 w-5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-bold flex items-center justify-center shrink-0">1</span>
+              <span className="text-gray-700">Go to <Link href="/admin/access-codes" className="text-blue-600 font-medium hover:underline">Access Codes</Link> and generate codes for your board members</span>
+            </div>
+            <div className="flex items-center gap-2.5">
+              <span className="h-5 w-5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-bold flex items-center justify-center shrink-0">2</span>
+              <span className="text-gray-700">Share the codes — members log in and fill their itinerary</span>
+            </div>
+            <div className="flex items-center gap-2.5">
+              <span className="h-5 w-5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-bold flex items-center justify-center shrink-0">3</span>
+              <span className="text-gray-700">Or <Link href="/admin/imports" className="text-blue-600 font-medium hover:underline">import a CSV</Link> to bulk-create members</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Activity section */}
       <div>
         <div className="flex items-center justify-between mb-4">

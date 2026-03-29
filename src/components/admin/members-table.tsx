@@ -72,7 +72,7 @@ export function MembersTable({ members, basePath = "/admin/members" }: { members
           </thead>
           <tbody className="divide-y divide-gray-50">
             {sorted.map((m) => (
-              <tr key={m.id} onClick={() => router.push(`${basePath}/${m.id}`)} className="group cursor-pointer transition-colors hover:bg-gray-50/80">
+              <tr key={m.id} onClick={() => router.push(`${basePath}/${m.id}`)} tabIndex={0} role="link" aria-label={`View ${m.name}`} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); router.push(`${basePath}/${m.id}`); } }} className="group cursor-pointer transition-colors hover:bg-gray-50/80 focus:bg-gray-50/80 focus:outline-none focus:ring-1 focus:ring-blue-500/20 focus:ring-inset">
                 <td className="relative px-4 py-3">
                   <div className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-center gap-2.5">

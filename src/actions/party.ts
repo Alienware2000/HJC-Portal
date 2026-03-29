@@ -29,14 +29,15 @@ export async function addPartyMember(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "Not authenticated" };
 
-  // Get the event_id from the board member
+  // Verify the user owns this board member
   const { data: bm } = await supabase
     .from("board_members")
     .select("event_id")
     .eq("id", boardMemberId)
+    .eq("user_id", user.id)
     .single();
 
-  if (!bm) return { error: "Board member not found" };
+  if (!bm) return { error: "Board member not found or unauthorized" };
 
   // Create party member
   const { data: partyMember, error: pmError } = await supabase
@@ -60,11 +61,13 @@ export async function addPartyMember(
 
 export async function deletePartyMember(partyMemberId: string) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
 
-  // Prevent deleting self
+  // Verify ownership and prevent deleting self
   const { data: pm } = await supabase
     .from("party_members")
-    .select("relationship")
+    .select("relationship, board_members!inner(user_id)")
     .eq("id", partyMemberId)
     .single();
 

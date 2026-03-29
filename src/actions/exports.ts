@@ -13,6 +13,11 @@ interface ExportRow {
 
 async function fetchAllData(): Promise<ExportRow[]> {
   const supabase = await createClient();
+
+  // Verify admin role
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user || user.user_metadata?.role !== "admin") return [];
+
   const event = await getActiveEvent();
   if (!event) return [];
 

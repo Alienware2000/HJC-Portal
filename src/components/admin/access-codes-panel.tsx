@@ -96,11 +96,11 @@ export function AccessCodesPanel({ codes }: { codes: AccessCode[] }) {
                 </td>
                 <td className="px-4 py-3 text-right">
                   <div className="flex items-center justify-end gap-1">
-                    <button onClick={() => handleCopy(code.code)} className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+                    <button onClick={() => handleCopy(code.code)} aria-label={`Copy code ${code.code}`} className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
                       {copiedCode === code.code ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
                     </button>
                     {!code.is_used && (
-                      <button onClick={() => handleDelete(code.id, code.board_member_name)} className="p-1.5 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+                      <button onClick={() => handleDelete(code.id, code.board_member_name)} aria-label={`Delete code for ${code.board_member_name}`} className="p-1.5 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
                     )}

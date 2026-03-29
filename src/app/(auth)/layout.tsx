@@ -2,11 +2,11 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="min-h-svh flex">
       {/* Left panel — branded */}
-      <div className="hidden lg:flex lg:w-[480px] xl:w-[560px] bg-[#0f1623] relative overflow-hidden flex-col justify-between p-10">
+      <div className="hidden lg:flex lg:w-[480px] xl:w-[560px] bg-[#0f1623] relative overflow-hidden flex-col justify-center items-start p-10">
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px]" />
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-amber-500/5" />
         <div className="relative z-10">
-          <div className="flex items-center gap-2.5 mb-16">
+          <div className="flex items-center gap-2.5 mb-8">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.1]">
               <span className="text-[11px] font-bold text-white/90 tracking-tight">HJ</span>
             </div>
@@ -19,7 +19,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             Manage your travel details, accommodation, and conference schedule all in one place.
           </p>
         </div>
-        <p className="relative z-10 text-xs text-white/20">Healing Jesus Conference {new Date().getFullYear()}</p>
+        <p className="absolute bottom-10 left-10 z-10 text-xs text-white/20">Healing Jesus Conference {new Date().getFullYear()}</p>
       </div>
 
       {/* Mobile brand header */}
