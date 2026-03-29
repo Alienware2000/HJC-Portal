@@ -160,7 +160,7 @@ export function ImportWizard() {
                     <td className="py-2.5 pr-4"><code className="text-[13px] font-mono text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">{h}</code></td>
                     <td className="py-2.5">
                       <select
-                        className="w-full h-8 rounded-lg border border-gray-200 bg-white px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-300"
+                        className="w-full h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 transition-all"
                         value={mapping[h] || "__skip__"}
                         onChange={(e) => handleMappingChange(h, e.target.value)}
                       >
@@ -179,10 +179,10 @@ export function ImportWizard() {
           )}
         </div>
         <div className="flex gap-2">
-          <button onClick={reset} className="h-9 px-4 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-1">
+          <button onClick={reset} className="h-10 px-4 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 focus-visible:ring-2 focus-visible:ring-ring/50 transition-all flex items-center gap-1">
             <ArrowLeft className="h-3.5 w-3.5" /> Back
           </button>
-          <button onClick={() => setStep("preview")} disabled={!hasBoardMemberName} className="h-9 px-4 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 disabled:opacity-50 transition-all flex items-center gap-1">
+          <button onClick={() => setStep("preview")} disabled={!hasBoardMemberName} className="h-10 px-4 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 active:bg-gray-950 focus-visible:ring-2 focus-visible:ring-ring/50 disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center gap-1">
             Preview <ArrowRight className="h-3.5 w-3.5" />
           </button>
         </div>
@@ -228,10 +228,10 @@ export function ImportWizard() {
           {rows.length > 10 && <p className="mt-2 text-xs text-gray-400">Showing first 10 of {rows.length}</p>}
         </div>
         <div className="flex gap-2">
-          <button onClick={() => setStep("mapping")} className="h-9 px-4 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-1">
+          <button onClick={() => setStep("mapping")} className="h-10 px-4 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 focus-visible:ring-2 focus-visible:ring-ring/50 transition-all flex items-center gap-1">
             <ArrowLeft className="h-3.5 w-3.5" /> Back
           </button>
-          <button onClick={handleImport} disabled={isPending} className="h-9 px-4 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 disabled:opacity-50 transition-all">
+          <button onClick={handleImport} disabled={isPending} className="h-10 px-4 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 active:bg-gray-950 focus-visible:ring-2 focus-visible:ring-ring/50 disabled:opacity-50 disabled:pointer-events-none transition-all">
             Import {validCount} Members
           </button>
         </div>

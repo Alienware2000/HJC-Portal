@@ -50,19 +50,19 @@ export default async function MemberDashboardPage() {
 
       {/* Actions */}
       <div className="grid sm:grid-cols-2 gap-4">
-        <Link href="/member/itinerary" className="group rounded-xl bg-white p-5 shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_2px_4px_rgba(0,0,0,0.05),0_12px_24px_rgba(0,0,0,0.05)] hover:shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_4px_8px_rgba(0,0,0,0.07),0_24px_48px_rgba(0,0,0,0.09)] transition-all hover:-translate-y-0.5">
+        <Link href="/member/itinerary" className="group rounded-xl bg-white p-5 shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_2px_4px_rgba(0,0,0,0.05),0_12px_24px_rgba(0,0,0,0.05)] hover:shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_4px_8px_rgba(0,0,0,0.07),0_24px_48px_rgba(0,0,0,0.09)] transition-all duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-ring/50 focus:outline-none">
           <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center mb-3">
             <ClipboardList className="h-5 w-5 text-blue-600" />
           </div>
           <p className="text-sm font-semibold text-gray-900">My Itinerary</p>
-          <p className="text-[13px] text-gray-400 mt-1">Fill in your travel and accommodation details</p>
+          <p className="text-[13px] text-gray-500 mt-1">Fill in your travel and accommodation details</p>
         </Link>
-        <Link href="/member/party" className="group rounded-xl bg-white p-5 shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_2px_4px_rgba(0,0,0,0.05),0_12px_24px_rgba(0,0,0,0.05)] hover:shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_4px_8px_rgba(0,0,0,0.07),0_24px_48px_rgba(0,0,0,0.09)] transition-all hover:-translate-y-0.5">
+        <Link href="/member/party" className="group rounded-xl bg-white p-5 shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_2px_4px_rgba(0,0,0,0.05),0_12px_24px_rgba(0,0,0,0.05)] hover:shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_4px_8px_rgba(0,0,0,0.07),0_24px_48px_rgba(0,0,0,0.09)] transition-all duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-ring/50 focus:outline-none">
           <div className="h-10 w-10 rounded-xl bg-purple-50 flex items-center justify-center mb-3">
             <Users className="h-5 w-5 text-purple-600" />
           </div>
           <p className="text-sm font-semibold text-gray-900">My Party</p>
-          <p className="text-[13px] text-gray-400 mt-1">{partyCount} member{partyCount !== 1 ? "s" : ""} in your party</p>
+          <p className="text-[13px] text-gray-500 mt-1">{partyCount} member{partyCount !== 1 ? "s" : ""} in your party</p>
         </Link>
       </div>
     </div>

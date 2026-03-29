@@ -35,7 +35,7 @@ export function AddPartyMemberDialog({ boardMemberId }: { boardMemberId: string 
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="h-9 px-4 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition-all flex items-center gap-1.5 shadow-sm">
+      <DialogTrigger className="h-10 px-4 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 active:bg-gray-950 focus-visible:ring-2 focus-visible:ring-ring/50 transition-all flex items-center gap-1.5 shadow-sm">
         <Plus className="h-3.5 w-3.5" /> Add Member
       </DialogTrigger>
       <DialogContent className="sm:max-w-[400px]">
@@ -68,10 +68,10 @@ export function AddPartyMemberDialog({ boardMemberId }: { boardMemberId: string 
             {errors.relationship && <p className="text-[13px] text-red-600 mt-1">{errors.relationship.message}</p>}
           </div>
           <div className="flex justify-end gap-2 pt-2">
-            <button type="button" onClick={() => setOpen(false)} className="h-9 px-4 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50">
+            <button type="button" onClick={() => setOpen(false)} className="h-10 px-4 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 focus-visible:ring-2 focus-visible:ring-ring/50 transition-all">
               Cancel
             </button>
-            <button type="submit" disabled={isPending} className="h-9 px-4 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 disabled:opacity-50 flex items-center gap-1.5">
+            <button type="submit" disabled={isPending} className="h-10 px-4 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 active:bg-gray-950 focus-visible:ring-2 focus-visible:ring-ring/50 disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center gap-1.5">
               {isPending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
               Add
             </button>

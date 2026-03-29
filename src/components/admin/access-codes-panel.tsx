@@ -54,7 +54,7 @@ export function AccessCodesPanel({ codes }: { codes: AccessCode[] }) {
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleGenerate()}
           />
-          <button onClick={handleGenerate} disabled={isPending} className="h-9 px-4 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 disabled:opacity-50 transition-all flex items-center gap-1.5 shadow-sm shrink-0">
+          <button onClick={handleGenerate} disabled={isPending} className="h-10 px-4 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 active:bg-gray-950 focus-visible:ring-2 focus-visible:ring-ring/50 disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center gap-1.5 shadow-sm shrink-0">
             {isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
             Generate
           </button>
@@ -64,7 +64,7 @@ export function AccessCodesPanel({ codes }: { codes: AccessCode[] }) {
       {/* Filters */}
       <div className="flex gap-1.5">
         {(["all", "unused", "used"] as const).map((f) => (
-          <button key={f} onClick={() => setFilter(f)} className={`rounded-lg px-3 py-1.5 text-[13px] font-medium transition-all ${filter === f ? "bg-gray-900 text-white shadow-sm" : "bg-gray-100 text-gray-500 hover:text-gray-700"}`}>
+          <button key={f} onClick={() => setFilter(f)} className={`rounded-lg px-3 py-1.5 text-[13px] font-medium transition-all focus-visible:ring-2 focus-visible:ring-ring/50 ${filter === f ? "bg-gray-900 text-white shadow-sm" : "bg-gray-100 text-gray-500 hover:text-gray-700 hover:bg-gray-200"}`}>
             {f === "all" ? `All (${codes.length})` : f === "unused" ? `Unused (${codes.filter((c) => !c.is_used).length})` : `Used (${codes.filter((c) => c.is_used).length})`}
           </button>
         ))}

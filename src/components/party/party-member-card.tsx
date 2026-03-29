@@ -27,8 +27,12 @@ export function PartyMemberCard({ id, name, relationship, completionPct, isSelf 
 
   return (
     <div
-      className="group rounded-xl bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_2px_4px_rgba(0,0,0,0.05),0_12px_24px_rgba(0,0,0,0.05)] hover:shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_4px_8px_rgba(0,0,0,0.07),0_24px_48px_rgba(0,0,0,0.09)] transition-all duration-200 hover:-translate-y-0.5 cursor-pointer overflow-hidden"
+      tabIndex={0}
+      role="link"
+      aria-label={`Edit ${name}'s itinerary`}
+      className="group rounded-xl bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_2px_4px_rgba(0,0,0,0.05),0_12px_24px_rgba(0,0,0,0.05)] hover:shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_4px_8px_rgba(0,0,0,0.07),0_24px_48px_rgba(0,0,0,0.09)] transition-all duration-200 hover:-translate-y-0.5 cursor-pointer overflow-hidden focus-visible:ring-2 focus-visible:ring-ring/50 focus:outline-none"
       onClick={() => router.push(itineraryHref)}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); router.push(itineraryHref); } }}
     >
       <div className="p-4">
         <div className="flex items-center justify-between mb-3">
@@ -46,7 +50,7 @@ export function PartyMemberCard({ id, name, relationship, completionPct, isSelf 
           </div>
           <div className="flex items-center gap-1 shrink-0">
             {!isSelf && (
-              <button onClick={handleDelete} disabled={isPending} aria-label={`Remove ${name}`} className="p-1.5 rounded-md text-gray-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all">
+              <button onClick={handleDelete} disabled={isPending} aria-label={`Remove ${name}`} className="p-2 rounded-md text-gray-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:opacity-100 transition-all">
                 {isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
               </button>
             )}

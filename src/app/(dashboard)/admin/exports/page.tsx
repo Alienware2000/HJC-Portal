@@ -53,13 +53,13 @@ export default function ExportsPage() {
               key={exp.type}
               onClick={() => handleExport(exp.type)}
               disabled={isDownloading}
-              className="text-left rounded-xl bg-white p-5 shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_2px_4px_rgba(0,0,0,0.05),0_12px_24px_rgba(0,0,0,0.05)] hover:shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_4px_8px_rgba(0,0,0,0.07),0_24px_48px_rgba(0,0,0,0.09)] transition-all hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-wait"
+              className="text-left rounded-xl bg-white p-5 shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_2px_4px_rgba(0,0,0,0.05),0_12px_24px_rgba(0,0,0,0.05)] hover:shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_4px_8px_rgba(0,0,0,0.07),0_24px_48px_rgba(0,0,0,0.09)] transition-all duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-ring/50 focus:outline-none disabled:opacity-70 disabled:cursor-wait"
             >
               <div className={`h-10 w-10 rounded-xl flex items-center justify-center mb-3 ${exp.color === "blue" ? "bg-blue-50" : exp.color === "purple" ? "bg-purple-50" : "bg-emerald-50"}`}>
                 <exp.icon className={`h-5 w-5 ${exp.color === "blue" ? "text-blue-600" : exp.color === "purple" ? "text-purple-600" : "text-emerald-600"}`} />
               </div>
               <p className="text-sm font-semibold text-gray-900">{exp.label}</p>
-              <p className="text-[13px] text-gray-400 mt-1">{exp.description}</p>
+              <p className="text-[13px] text-gray-500 mt-1">{exp.description}</p>
               <div className="mt-3 flex items-center gap-1 text-xs font-medium">
                 {isDownloading ? (
                   <><Loader2 className="h-3 w-3 animate-spin text-gray-400" /> <span className="text-gray-400">Preparing...</span></>

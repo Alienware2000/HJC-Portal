@@ -252,14 +252,14 @@ function FieldRenderer({
           type="button"
           onClick={() => onBooleanChange(field, !isChecked)}
           className={cn(
-            "w-full rounded-xl border-2 px-5 py-4 flex items-center justify-between gap-4 transition-all text-left",
+            "w-full rounded-lg border-2 px-5 py-4 flex items-center justify-between gap-4 transition-all duration-200 text-left focus-visible:ring-2 focus-visible:ring-ring/50 focus:outline-none",
             isChecked
               ? "border-emerald-300 bg-emerald-50/50"
               : "border-gray-200 bg-white hover:border-gray-300"
           )}
         >
           <div>
-            <p className="text-[15px] font-medium text-gray-900">{config?.label || label}</p>
+            <p className="text-sm font-medium text-gray-700">{config?.label || label}</p>
             <p className="text-sm text-gray-500 mt-0.5">{config?.description || ""}</p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
@@ -280,13 +280,13 @@ function FieldRenderer({
   if (SELECT_FIELDS[field]) {
     return (
       <div className="space-y-2">
-        <label htmlFor={field} className="text-[15px] font-medium text-gray-900 flex items-center gap-2">
+        <label htmlFor={field} className="text-sm font-medium text-gray-700 flex items-center gap-2">
           {label}
           {isSaving && <Loader2 className="h-3.5 w-3.5 animate-spin text-gray-400" />}
         </label>
         <select
           id={field}
-          className="w-full h-12 rounded-xl bg-white border border-gray-300 px-4 text-base text-gray-900 transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:outline-none"
+          className="w-full h-11 rounded-lg bg-white border border-gray-300 px-3 text-sm text-gray-900 transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:outline-none"
           value={getValues(field) || ""}
           onChange={(e) => onSelectChange(field, e.target.value)}
         >
@@ -295,7 +295,7 @@ function FieldRenderer({
             <option key={opt.value} value={opt.value}>{opt.label}</option>
           ))}
         </select>
-        {help && <p className="text-sm text-gray-400">{help}</p>}
+        {help && <p className="text-sm text-gray-500">{help}</p>}
       </div>
     );
   }
@@ -307,19 +307,19 @@ function FieldRenderer({
   if (TEXTAREA_FIELDS.has(field)) {
     return (
       <div className="md:col-span-2 space-y-2">
-        <label htmlFor={field} className="text-[15px] font-medium text-gray-900 flex items-center gap-2">
+        <label htmlFor={field} className="text-sm font-medium text-gray-700 flex items-center gap-2">
           {label}
           {isSaving && <Loader2 className="h-3.5 w-3.5 animate-spin text-gray-400" />}
         </label>
         <Textarea
           id={field}
           rows={3}
-          className="text-base resize-none rounded-xl border-gray-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 px-4 py-3"
+          className="text-sm resize-none rounded-lg border-gray-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 px-3 py-3"
           {...register(field)}
           onBlur={() => onBlur(field)}
           placeholder={placeholder || `Enter ${label.toLowerCase()}...`}
         />
-        {help && <p className="text-sm text-gray-400">{help}</p>}
+        {help && <p className="text-sm text-gray-500">{help}</p>}
       </div>
     );
   }
@@ -329,19 +329,19 @@ function FieldRenderer({
 
   return (
     <div className="space-y-2">
-      <label htmlFor={field} className="text-[15px] font-medium text-gray-900 flex items-center gap-2">
+      <label htmlFor={field} className="text-sm font-medium text-gray-700 flex items-center gap-2">
         {label}
         {isSaving && <Loader2 className="h-3.5 w-3.5 animate-spin text-gray-400" />}
       </label>
       <input
         id={field}
         type={inputType}
-        className="w-full h-12 rounded-xl bg-white border border-gray-300 px-4 text-base text-gray-900 placeholder:text-gray-400 transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:outline-none"
+        className="w-full h-11 rounded-lg bg-white border border-gray-300 px-3 text-sm text-gray-900 placeholder:text-gray-400 transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:outline-none"
         {...register(field)}
         onBlur={() => onBlur(field)}
         placeholder={placeholder || (inputType === "text" ? label : undefined)}
       />
-      {help && <p className="text-sm text-gray-400">{help}</p>}
+      {help && <p className="text-sm text-gray-500">{help}</p>}
     </div>
   );
 }
