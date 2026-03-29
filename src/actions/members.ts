@@ -112,6 +112,46 @@ export async function getDashboardStats() {
   };
 }
 
+export async function getCompletionDistribution() {
+  const supabase = await createClient();
+  const event = await getActiveEvent();
+  if (!event) return { buckets: [], needsAttention: [] };
+
+  const { data } = await supabase
+    .from("board_members")
+    .select("id, name, completion_pct")
+    .eq("event_id", event.id)
+    .order("completion_pct", { ascending: true });
+
+  if (!data || data.length === 0) return { buckets: [], needsAttention: [] };
+
+  const buckets = [
+    { range: "0%", count: 0, color: "#d1d5db" },
+    { range: "1–25%", count: 0, color: "#93c5fd" },
+    { range: "26–50%", count: 0, color: "#60a5fa" },
+    { range: "51–75%", count: 0, color: "#f59e0b" },
+    { range: "76–99%", count: 0, color: "#fbbf24" },
+    { range: "100%", count: 0, color: "#34d399" },
+  ];
+
+  for (const m of data) {
+    const pct = Number(m.completion_pct);
+    if (pct === 0) buckets[0].count++;
+    else if (pct <= 25) buckets[1].count++;
+    else if (pct <= 50) buckets[2].count++;
+    else if (pct <= 75) buckets[3].count++;
+    else if (pct < 100) buckets[4].count++;
+    else buckets[5].count++;
+  }
+
+  const needsAttention = data
+    .filter((m) => Number(m.completion_pct) === 0)
+    .slice(0, 5)
+    .map((m) => ({ id: m.id, name: m.name, completion_pct: Number(m.completion_pct) }));
+
+  return { buckets, needsAttention };
+}
+
 export async function getRecentActivity(limit = 20) {
   const supabase = await createClient();
   const { data, error } = await supabase

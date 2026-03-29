@@ -1,5 +1,6 @@
 import { formatDistanceToNow } from "date-fns";
 import { FileText } from "lucide-react";
+import { FIELD_LABELS } from "@/lib/validations/itinerary";
 
 interface ChangeLogEntry {
   id: string;
@@ -42,13 +43,17 @@ export function ActivityFeed({ entries, compact = false }: { entries: ChangeLogE
                 </div>
                 {!compact && changedFields.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-1.5">
-                    {changedFields.slice(0, 5).map((field) => (
-                      <span key={field} className="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md">
-                        <span className="font-medium">{field}</span>
-                        <span className="text-gray-400">&rarr;</span>
-                        <span className="text-gray-800">{String(entry.changes[field].new || "—").slice(0, 20)}</span>
-                      </span>
-                    ))}
+                    {changedFields.slice(0, 5).map((field) => {
+                      const label = FIELD_LABELS[field] || field;
+                      const newVal = String(entry.changes[field].new || "—");
+                      return (
+                        <span key={field} className="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md" title={`${label}: ${newVal}`}>
+                          <span className="font-medium">{label}</span>
+                          <span className="text-gray-400">&rarr;</span>
+                          <span className="text-gray-800">{newVal.length > 25 ? newVal.slice(0, 25) + "..." : newVal}</span>
+                        </span>
+                      );
+                    })}
                     {changedFields.length > 5 && <span className="text-xs text-gray-400 px-1">+{changedFields.length - 5}</span>}
                   </div>
                 )}
