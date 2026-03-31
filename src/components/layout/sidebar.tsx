@@ -15,6 +15,8 @@ import {
   Upload,
   LogOut,
   Loader2,
+  UsersRound,
+  Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
@@ -39,6 +41,12 @@ const NAV_SECTIONS: Record<Role, { label: string; items: NavItem[] }[]> = {
         { label: "My Party", href: "/member/party", icon: UserPlus },
       ],
     },
+    {
+      label: "Account",
+      items: [
+        { label: "Settings", href: "/member/settings", icon: Settings },
+      ],
+    },
   ],
   admin: [
     {
@@ -48,6 +56,7 @@ const NAV_SECTIONS: Record<Role, { label: string; items: NavItem[] }[]> = {
         { label: "Members", href: "/admin/members", icon: Users },
         { label: "Access Codes", href: "/admin/access-codes", icon: KeyRound },
         { label: "Activity", href: "/admin/activity", icon: Activity },
+        { label: "Team", href: "/admin/team", icon: UsersRound },
       ],
     },
     {
@@ -57,12 +66,24 @@ const NAV_SECTIONS: Record<Role, { label: string; items: NavItem[] }[]> = {
         { label: "Imports", href: "/admin/imports", icon: Upload },
       ],
     },
+    {
+      label: "Account",
+      items: [
+        { label: "Settings", href: "/admin/settings", icon: Settings },
+      ],
+    },
   ],
   staff: [
     {
       label: "Main",
       items: [
         { label: "Dashboard", href: "/staff", icon: LayoutDashboard },
+      ],
+    },
+    {
+      label: "Account",
+      items: [
+        { label: "Settings", href: "/staff/settings", icon: Settings },
       ],
     },
   ],

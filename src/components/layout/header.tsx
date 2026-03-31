@@ -13,7 +13,11 @@ const PAGE_TITLES: Record<string, string> = {
   "/admin/activity": "Activity",
   "/admin/exports": "Exports",
   "/admin/imports": "Imports",
+  "/admin/team": "Team",
+  "/admin/settings": "Settings",
   "/staff": "Dashboard",
+  "/staff/settings": "Settings",
+  "/member/settings": "Settings",
 };
 
 const ROLE_LABELS: Record<Role, string> = {
