@@ -84,26 +84,30 @@ export default async function AdminDashboardPage() {
       {stats.totalMembers === 0 && (
         <div className="rounded-xl bg-white p-6 shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_2px_4px_rgba(0,0,0,0.05),0_12px_24px_rgba(0,0,0,0.05)]">
           <h3 className="text-[15px] font-semibold text-gray-900 mb-2">Getting Started</h3>
-          <p className="text-sm text-gray-500 mb-4">Set up your conference in a few steps:</p>
+          <p className="text-sm text-gray-500 mb-4">No board members yet. Here&apos;s how to get started:</p>
           <div className="space-y-3 text-sm">
             <GettingStartedStep
               number={1}
-              done={(teamCount ?? 1) > 1}
-              text={<>Add your <Link href="/admin/team" className="text-blue-600 font-medium hover:underline">team members</Link> — invite other admins or staff who need access</>}
+              done={stats.totalAccessCodes > 0}
+              text={<><Link href="/admin/access-codes" className="text-blue-600 font-medium hover:underline">Generate access codes</Link> for your board members</>}
             />
             <GettingStartedStep
               number={2}
-              done={stats.totalAccessCodes > 0}
-              text={<>Go to <Link href="/admin/access-codes" className="text-blue-600 font-medium hover:underline">Access Codes</Link> and generate codes for your board members</>}
+              text={<>Share the codes — members log in and fill their itinerary</>}
             />
             <GettingStartedStep
               number={3}
-              text={<>Share the codes — members log in at the portal and fill their itinerary</>}
+              text={<>Track progress here as members complete their details</>}
             />
-            <div className="flex items-center gap-2 pt-1 pl-8 text-gray-400 text-[13px]">
-              <span className="w-5 border-t border-gray-200" />
-              <span>or <Link href="/admin/imports" className="text-blue-600 font-medium hover:underline">import a CSV</Link> to bulk-create members instead</span>
-            </div>
+          </div>
+          <div className="border-t border-gray-100 mt-4 pt-4 space-y-2 text-[13px] text-gray-400">
+            <p>
+              <Link href="/admin/imports" className="text-blue-600 font-medium hover:underline">Import a CSV</Link> to create members in bulk
+            </p>
+            <p className="flex items-center gap-1.5">
+              {(teamCount ?? 1) > 1 && <span className="text-emerald-500">&#10003;</span>}
+              <span>Add other admins or read-only staff in <Link href="/admin/team" className="text-blue-600 font-medium hover:underline">Team</Link></span>
+            </p>
           </div>
         </div>
       )}
