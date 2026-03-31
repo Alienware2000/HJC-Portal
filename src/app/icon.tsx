@@ -19,10 +19,10 @@ export default function Icon() {
       >
         <span
           style={{
-            fontSize: 11,
-            fontWeight: 800,
+            fontSize: 12,
+            fontWeight: 900,
             color: "white",
-            letterSpacing: -0.5,
+            letterSpacing: -0.3,
           }}
         >
           HJC
