@@ -40,7 +40,17 @@ export default async function StaffDashboardPage() {
         </div>
       </div>
 
-      <MembersTable members={members} basePath="/staff/members" />
+      {members.length > 0 ? (
+        <MembersTable members={members} basePath="/staff/members" />
+      ) : (
+        <div className="rounded-xl bg-white py-16 text-center shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_2px_4px_rgba(0,0,0,0.05),0_12px_24px_rgba(0,0,0,0.05)]">
+          <div className="mx-auto h-10 w-10 rounded-xl bg-gray-100 flex items-center justify-center mb-3">
+            <Users className="h-5 w-5 text-gray-300" />
+          </div>
+          <p className="text-sm font-medium text-gray-900">No members yet</p>
+          <p className="text-[13px] text-gray-400 mt-1 max-w-xs mx-auto">Board members will appear here once the admin generates access codes and members log in.</p>
+        </div>
+      )}
     </div>
   );
 }

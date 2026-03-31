@@ -46,6 +46,9 @@ export default async function MemberDashboardPage() {
         <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
           <div className={`h-full rounded-full transition-all duration-500 ${completion >= 67 ? "bg-emerald-500" : "bg-blue-500"}`} style={{ width: `${completion}%` }} />
         </div>
+        {completion === 0 && (
+          <p className="text-[13px] text-gray-400 mt-3">Start by filling in your itinerary below — your travel, hotel, and conference details.</p>
+        )}
       </div>
 
       {/* Actions */}

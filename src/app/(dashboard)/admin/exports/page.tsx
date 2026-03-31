@@ -9,9 +9,9 @@ export default function ExportsPage() {
   const [downloaded, setDownloaded] = useState<Set<string>>(new Set());
 
   const exports = [
-    { type: "all-members", label: "All Members", description: "Complete roster with itinerary data", icon: Users, color: "blue" },
-    { type: "rooming-list", label: "Rooming List", description: "Hotel preferences and room assignments", icon: Hotel, color: "purple" },
-    { type: "pickup-schedule", label: "Pickup Schedule", description: "Airport arrival and pickup details", icon: Plane, color: "emerald" },
+    { type: "all-members", label: "All Members", description: "Names, contact info, access codes, and all itinerary fields", icon: Users, color: "blue" },
+    { type: "rooming-list", label: "Rooming List", description: "Hotel preferences, room types, check-in/out dates, and special requests", icon: Hotel, color: "purple" },
+    { type: "pickup-schedule", label: "Pickup Schedule", description: "Arrival dates, flight numbers, airports, and pickup preferences", icon: Plane, color: "emerald" },
   ];
 
   const handleExport = async (type: string) => {

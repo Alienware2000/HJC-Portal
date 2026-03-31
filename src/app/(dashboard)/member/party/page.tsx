@@ -43,7 +43,7 @@ export default async function PartyPage() {
             <Users className="h-5 w-5 text-gray-300" />
           </div>
           <p className="text-sm font-medium text-gray-900">No party members yet</p>
-          <p className="text-[13px] text-gray-400 mt-1">Add family members or guests to manage their itineraries.</p>
+          <p className="text-[13px] text-gray-400 mt-1 max-w-xs mx-auto">Add family members or guests travelling with you. Each person gets their own itinerary for travel and accommodation details.</p>
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">

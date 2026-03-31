@@ -114,8 +114,8 @@ export function AccessCodesPanel({ codes }: { codes: AccessCode[] }) {
                   <div className="mx-auto h-10 w-10 rounded-xl bg-gray-100 flex items-center justify-center mb-3">
                     <KeyRound className="h-5 w-5 text-gray-300" />
                   </div>
-                  <p className="text-sm font-medium text-gray-900">No codes found</p>
-                  <p className="text-[13px] text-gray-400 mt-1">Generate an access code to get started.</p>
+                  <p className="text-sm font-medium text-gray-900">No access codes yet</p>
+                  <p className="text-[13px] text-gray-400 mt-1">Enter a board member&apos;s name above to generate their login code. Share the code so they can log in and fill their itinerary.</p>
                 </div>
               </td></tr>
             )}

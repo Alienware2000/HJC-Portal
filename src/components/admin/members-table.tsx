@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search, ChevronUp, ChevronDown } from "lucide-react";
+import { Search, ChevronUp, ChevronDown, Users } from "lucide-react";
 
 interface Member {
   id: string;
@@ -98,8 +98,18 @@ export function MembersTable({ members, basePath = "/admin/members" }: { members
               </tr>
             ))}
             {sorted.length === 0 && (
-              <tr><td colSpan={5} className="px-4 py-16 text-center text-sm text-gray-400">
-                {search ? "No members match your search." : "No members registered yet."}
+              <tr><td colSpan={5} className="px-4 py-16 text-center">
+                <div className="mx-auto max-w-[280px]">
+                  <div className="mx-auto h-10 w-10 rounded-xl bg-gray-100 flex items-center justify-center mb-3">
+                    <Users className="h-5 w-5 text-gray-300" />
+                  </div>
+                  <p className="text-sm font-medium text-gray-900">{search ? "No members match your search" : "No members yet"}</p>
+                  <p className="text-[13px] text-gray-400 mt-1">
+                    {search
+                      ? "Try a different name, email, or access code."
+                      : "Members will appear here once they log in with their access codes."}
+                  </p>
+                </div>
               </td></tr>
             )}
           </tbody>

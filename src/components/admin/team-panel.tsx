@@ -318,8 +318,8 @@ export function TeamPanel({ members }: { members: Profile[] }) {
                     </p>
                     <p className="text-[13px] text-gray-400 mt-1">
                       {search
-                        ? "Try a different search term."
-                        : "Add a team member to get started."}
+                        ? "Try a different name or email."
+                        : "Add admins for full control or staff for read-only access to member data."}
                     </p>
                   </div>
                 </td>

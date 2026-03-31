@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Users, KeyRound, BarChart3, Activity, ArrowRight, TrendingUp, AlertTriangle } from "lucide-react";
+import { Users, KeyRound, BarChart3, Activity, ArrowRight, TrendingUp, AlertTriangle, UsersRound } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getDashboardStats, getRecentActivity, getCompletionDistribution } from "@/actions/members";
 import { FIELD_LABELS } from "@/lib/validations/itinerary";
 
@@ -13,10 +14,12 @@ export default async function AdminDashboardPage() {
   if (!user) redirect("/login");
 
   const firstName = (user.user_metadata?.full_name || "Admin").split(" ")[0];
-  const [stats, { data: recentActivity }, distribution] = await Promise.all([
+  const admin = createAdminClient();
+  const [stats, { data: recentActivity }, distribution, { count: teamCount }] = await Promise.all([
     getDashboardStats(),
     getRecentActivity(6),
     getCompletionDistribution(),
+    admin.from("profiles").select("*", { count: "exact", head: true }).in("role", ["admin", "staff"]),
   ]);
 
   const { buckets, needsAttention } = distribution;
@@ -81,19 +84,25 @@ export default async function AdminDashboardPage() {
       {stats.totalMembers === 0 && (
         <div className="rounded-xl bg-white p-6 shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_2px_4px_rgba(0,0,0,0.05),0_12px_24px_rgba(0,0,0,0.05)]">
           <h3 className="text-[15px] font-semibold text-gray-900 mb-2">Getting Started</h3>
-          <p className="text-sm text-gray-500 mb-4">No board members yet. Here&apos;s how to get started:</p>
-          <div className="space-y-2.5 text-sm">
-            <div className="flex items-center gap-2.5">
-              <span className="h-6 w-6 rounded-full bg-blue-100 text-blue-700 text-[11px] font-bold flex items-center justify-center shrink-0">1</span>
-              <span className="text-gray-700">Go to <Link href="/admin/access-codes" className="text-blue-600 font-medium hover:underline">Access Codes</Link> and generate codes for your board members</span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <span className="h-6 w-6 rounded-full bg-blue-100 text-blue-700 text-[11px] font-bold flex items-center justify-center shrink-0">2</span>
-              <span className="text-gray-700">Share the codes — members log in and fill their itinerary</span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <span className="h-6 w-6 rounded-full bg-blue-100 text-blue-700 text-[11px] font-bold flex items-center justify-center shrink-0">3</span>
-              <span className="text-gray-700">Or <Link href="/admin/imports" className="text-blue-600 font-medium hover:underline">import a CSV</Link> to bulk-create members</span>
+          <p className="text-sm text-gray-500 mb-4">Set up your conference in a few steps:</p>
+          <div className="space-y-3 text-sm">
+            <GettingStartedStep
+              number={1}
+              done={(teamCount ?? 1) > 1}
+              text={<>Add your <Link href="/admin/team" className="text-blue-600 font-medium hover:underline">team members</Link> — invite other admins or staff who need access</>}
+            />
+            <GettingStartedStep
+              number={2}
+              done={stats.totalAccessCodes > 0}
+              text={<>Go to <Link href="/admin/access-codes" className="text-blue-600 font-medium hover:underline">Access Codes</Link> and generate codes for your board members</>}
+            />
+            <GettingStartedStep
+              number={3}
+              text={<>Share the codes — members log in at the portal and fill their itinerary</>}
+            />
+            <div className="flex items-center gap-2 pt-1 pl-8 text-gray-400 text-[13px]">
+              <span className="w-5 border-t border-gray-200" />
+              <span>or <Link href="/admin/imports" className="text-blue-600 font-medium hover:underline">import a CSV</Link> to bulk-create members instead</span>
             </div>
           </div>
         </div>
@@ -233,6 +242,18 @@ export default async function AdminDashboardPage() {
           </table>
         )}
       </div>
+    </div>
+  );
+}
+
+/* Getting Started Step */
+function GettingStartedStep({ number, done, text }: { number: number; done?: boolean; text: React.ReactNode }) {
+  return (
+    <div className="flex items-center gap-2.5">
+      <span className={`h-6 w-6 rounded-full text-[11px] font-bold flex items-center justify-center shrink-0 ${done ? "bg-emerald-100 text-emerald-700" : "bg-blue-100 text-blue-700"}`}>
+        {done ? "\u2713" : number}
+      </span>
+      <span className={done ? "text-gray-400 line-through" : "text-gray-700"}>{text}</span>
     </div>
   );
 }
