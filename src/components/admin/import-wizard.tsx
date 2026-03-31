@@ -147,7 +147,7 @@ export function ImportWizard() {
             Map Columns <span className="text-gray-400 font-normal">({rows.length} rows)</span>
           </p>
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-[480px]">
               <thead>
                 <tr className="border-b border-gray-100">
                   <th className="py-2.5 pr-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">CSV Column</th>
@@ -204,7 +204,7 @@ export function ImportWizard() {
             Preview <span className="text-gray-400 font-normal">{validCount} valid of {rows.length}</span>
           </p>
           <div className="overflow-x-auto rounded-lg border border-gray-100">
-            <table className="w-full">
+            <table className="w-full min-w-[480px]">
               <thead>
                 <tr className="bg-gray-50/50 border-b border-gray-100">
                   {mappedFields.map((f) => (
@@ -260,7 +260,7 @@ export function ImportWizard() {
             <CheckCircle2 className="h-5 w-5 text-emerald-500" />
             <p className="text-[14px] font-semibold text-gray-900">Import Complete</p>
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
               { label: "Created", value: result.created, color: "text-emerald-600", bg: "bg-emerald-50" },
               { label: "Updated", value: result.updated, color: "text-blue-600", bg: "bg-blue-50" },

@@ -72,7 +72,8 @@ export function AccessCodesPanel({ codes }: { codes: AccessCode[] }) {
 
       {/* Table */}
       <div className="rounded-xl bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_2px_4px_rgba(0,0,0,0.05),0_12px_24px_rgba(0,0,0,0.05)] overflow-hidden">
-        <table className="w-full">
+        <div className="overflow-x-auto">
+        <table className="w-full min-w-[500px]">
           <thead>
             <tr className="bg-gray-50/50">
               <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Code</th>
@@ -84,17 +85,17 @@ export function AccessCodesPanel({ codes }: { codes: AccessCode[] }) {
           <tbody className="divide-y divide-gray-100">
             {filtered.map((code) => (
               <tr key={code.id} className="hover:bg-gray-50/70 transition-colors">
-                <td className="px-4 py-3">
+                <td className="px-4 py-3.5">
                   <code className="text-[13px] font-mono font-semibold text-gray-800 bg-gray-100 px-2 py-1 rounded-md tracking-wide">{code.code}</code>
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-700">{code.board_member_name}</td>
-                <td className="px-4 py-3 text-center hidden sm:table-cell">
+                <td className="px-4 py-3.5 text-sm text-gray-700">{code.board_member_name}</td>
+                <td className="px-4 py-3.5 text-center hidden sm:table-cell">
                   <span className={`inline-flex items-center gap-1.5 text-xs font-semibold rounded-md px-2 py-0.5 ${code.is_used ? "bg-emerald-50 text-emerald-700" : "bg-gray-100 text-gray-500"}`}>
                     <span className={`h-1.5 w-1.5 rounded-full ${code.is_used ? "bg-emerald-500" : "bg-gray-400"}`} />
                     {code.is_used ? "Used" : "Available"}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-right">
+                <td className="px-4 py-3.5 text-right">
                   <div className="flex items-center justify-end gap-1">
                     <button onClick={() => handleCopy(code.code)} aria-label={`Copy code ${code.code}`} className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-ring/50 transition-all">
                       {copiedCode === code.code ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
@@ -121,6 +122,7 @@ export function AccessCodesPanel({ codes }: { codes: AccessCode[] }) {
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

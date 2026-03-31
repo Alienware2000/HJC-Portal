@@ -183,7 +183,7 @@ export function ItineraryForm({ itinerary, personName, backHref }: ItineraryForm
           return (
             <div key={section.id} className="rounded-2xl bg-white border border-gray-200 shadow-sm overflow-hidden">
               {/* Section header */}
-              <div className="px-6 pt-6 pb-4 md:px-8">
+              <div className="px-4 sm:px-6 pt-6 pb-4 md:px-8">
                 <div className="flex items-center gap-4">
                   <div className={cn("flex items-center justify-center h-11 w-11 rounded-xl", config.bg)}>
                     <Icon className={cn("h-5 w-5", config.color)} />
@@ -202,9 +202,9 @@ export function ItineraryForm({ itinerary, personName, backHref }: ItineraryForm
               </div>
 
               {/* Fields */}
-              <div className="px-6 pb-6 md:px-8 md:pb-8">
+              <div className="px-4 pb-4 sm:px-6 sm:pb-6 md:px-8 md:pb-8">
                 <div className="h-px bg-gray-100 mb-6" />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 md:gap-x-8 gap-y-6">
                   {section.fields.map((field) => (
                     <FieldRenderer
                       key={field}

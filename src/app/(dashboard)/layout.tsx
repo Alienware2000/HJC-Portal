@@ -25,7 +25,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <Sidebar role={role} userName={userName} userEmail={userEmail} />
       <div className="lg:pl-[240px]">
         <Header role={role} eventName={event?.name || null} />
-        <main className="px-5 py-6 lg:px-8 max-w-5xl">
+        <main className="px-4 sm:px-5 lg:px-8 py-6 pb-[max(1.5rem,var(--safe-bottom))] max-w-5xl">
           {children}
         </main>
       </div>

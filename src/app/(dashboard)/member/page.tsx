@@ -31,7 +31,7 @@ export default async function MemberDashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-[22px] font-bold text-gray-900 tracking-tight">
+        <h2 className="text-lg sm:text-[22px] font-bold text-gray-900 tracking-tight">
           Hello, {firstName} <span className="inline-block ml-0.5">👋</span>
         </h2>
         <p className="text-sm text-gray-500 mt-1">Manage your conference itinerary and party members.</p>

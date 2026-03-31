@@ -44,7 +44,7 @@ export default function ExportsPage() {
         <h2 className="text-[20px] font-bold text-gray-900 tracking-tight">Exports</h2>
         <p className="text-sm text-gray-500 mt-1">Download conference data as CSV files.</p>
       </div>
-      <div className="grid sm:grid-cols-3 gap-4">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {exports.map((exp) => {
           const isDownloading = downloading === exp.type;
           const isDone = downloaded.has(exp.type);

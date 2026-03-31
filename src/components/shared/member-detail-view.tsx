@@ -62,7 +62,7 @@ export function MemberDetailView({ member, backHref, backLabel }: MemberDetailVi
                   {it && <CompletionBadge pct={Number(it.completion_pct ?? 0)} />}
                 </div>
                 {it && (
-                  <div className="px-5 py-4 grid gap-x-8 gap-y-2 sm:grid-cols-2 lg:grid-cols-3 text-sm">
+                  <div className="px-5 py-4 grid gap-x-4 sm:gap-x-8 gap-y-2 sm:grid-cols-2 lg:grid-cols-3 text-sm">
                     {Object.entries(FIELD_LABELS).map(([field, label]) => {
                       const value = it[field];
                       if (value === null || value === undefined || value === "" || value === false) return null;

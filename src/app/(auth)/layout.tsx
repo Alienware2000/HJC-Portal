@@ -23,7 +23,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       </div>
 
       {/* Mobile brand header */}
-      <div className="lg:hidden fixed top-0 inset-x-0 z-50 h-14 bg-white border-b border-gray-200 flex items-center px-4">
+      <div className="lg:hidden fixed top-0 inset-x-0 z-50 bg-white border-b border-gray-200 flex items-center px-4 h-14 pt-[var(--safe-top)]">
         <div className="flex items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#0f1623]">
             <span className="text-[10px] font-bold text-white/90 tracking-tight">HJ</span>
@@ -33,7 +33,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       </div>
 
       {/* Right panel — form */}
-      <div className="flex-1 flex items-center justify-center px-6 pt-20 pb-10 lg:pt-10 bg-white">
+      <div className="flex-1 flex items-center justify-center px-6 pt-[calc(3.5rem+var(--safe-top))] pb-[max(2.5rem,var(--safe-bottom))] lg:pt-10 bg-white">
         <div className="w-full max-w-[380px]">
           {children}
         </div>

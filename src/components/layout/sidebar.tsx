@@ -190,11 +190,11 @@ export function Sidebar({ role, userName, userEmail }: SidebarProps) {
   return (
     <>
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger render={<Button variant="ghost" size="icon" className="fixed left-3 top-3 z-40 lg:hidden h-8 w-8" />}>
+        <SheetTrigger render={<Button variant="ghost" size="icon" className="fixed z-40 lg:hidden h-10 w-10 left-[max(0.75rem,var(--safe-left))] top-[max(0.75rem,var(--safe-top))]" />}>
           <Menu className="h-4 w-4" />
           <span className="sr-only">Menu</span>
         </SheetTrigger>
-        <SheetContent side="left" className="w-[240px] p-0 bg-[#0f1623] border-none">
+        <SheetContent side="left" className="w-[280px] max-w-[85vw] p-0 bg-[#0f1623] border-none">
           <SheetTitle className="sr-only">Navigation</SheetTitle>
           <NavContent role={role} userName={userName} userEmail={userEmail} onNavigate={() => setOpen(false)} />
         </SheetContent>

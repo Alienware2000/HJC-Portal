@@ -57,6 +57,11 @@
  * Inspired by Linear, Notion, Stripe
  */
 :root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+
   --background: #f4f5f7;
   --foreground: #111827;
   --card: #ffffff;
@@ -168,9 +173,18 @@
 
 /* Custom scrollbar */
 @layer base {
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
   * { -webkit-tap-highlight-color: transparent; }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

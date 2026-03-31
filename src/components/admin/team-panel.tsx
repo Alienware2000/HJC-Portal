@@ -188,7 +188,8 @@ export function TeamPanel({ members }: { members: Profile[] }) {
 
       {/* Table */}
       <div className="rounded-xl bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_2px_4px_rgba(0,0,0,0.05),0_12px_24px_rgba(0,0,0,0.05)] overflow-hidden">
-        <table className="w-full">
+        <div className="overflow-x-auto">
+        <table className="w-full min-w-[500px]">
           <thead>
             <tr className="bg-gray-50/50">
               <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
@@ -211,7 +212,7 @@ export function TeamPanel({ members }: { members: Profile[] }) {
           <tbody className="divide-y divide-gray-100">
             {filtered.map((member) => (
               <tr key={member.id} className="hover:bg-gray-50/70 transition-colors">
-                <td className="px-4 py-3">
+                <td className="px-4 py-3.5">
                   <div className="flex items-center gap-2.5">
                     <div className="h-7 w-7 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
                       <span className="text-[10px] font-bold text-gray-500">
@@ -233,10 +234,10 @@ export function TeamPanel({ members }: { members: Profile[] }) {
                     </div>
                   </div>
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-500 hidden sm:table-cell">
+                <td className="px-4 py-3.5 text-sm text-gray-500 hidden sm:table-cell">
                   {member.email}
                 </td>
-                <td className="px-4 py-3 text-center">
+                <td className="px-4 py-3.5 text-center">
                   <span
                     className={`inline-flex items-center gap-1.5 text-xs font-semibold rounded-md px-2 py-0.5 ${
                       member.role === "admin"
@@ -252,10 +253,10 @@ export function TeamPanel({ members }: { members: Profile[] }) {
                     {member.role === "admin" ? "Admin" : "Staff"}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-400 hidden md:table-cell">
+                <td className="px-4 py-3.5 text-sm text-gray-400 hidden md:table-cell">
                   {formatDate(member.created_at)}
                 </td>
-                <td className="px-4 py-3 text-right">
+                <td className="px-4 py-3.5 text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger
                       render={
@@ -327,6 +328,7 @@ export function TeamPanel({ members }: { members: Profile[] }) {
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Create Dialog */}

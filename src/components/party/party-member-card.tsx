@@ -50,7 +50,7 @@ export function PartyMemberCard({ id, name, relationship, completionPct, isSelf 
           </div>
           <div className="flex items-center gap-1 shrink-0">
             {!isSelf && (
-              <button onClick={handleDelete} disabled={isPending} aria-label={`Remove ${name}`} className="p-2 rounded-md text-gray-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:opacity-100 transition-all">
+              <button onClick={handleDelete} disabled={isPending} aria-label={`Remove ${name}`} className="p-2 rounded-md text-gray-300 hover:text-red-500 hover:bg-red-50 sm:opacity-0 sm:group-hover:opacity-100 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:opacity-100 transition-all">
                 {isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
               </button>
             )}

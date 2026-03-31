@@ -30,7 +30,7 @@ export default async function AdminDashboardPage() {
     <div className="space-y-6">
       {/* Greeting */}
       <div>
-        <h2 className="text-[22px] font-bold text-gray-900 tracking-tight">
+        <h2 className="text-lg sm:text-[22px] font-bold text-gray-900 tracking-tight">
           Hello, {firstName} <span className="inline-block ml-0.5">👋</span>
         </h2>
         <p className="text-sm text-gray-500 mt-1">Here&apos;s what&apos;s happening with the conference.</p>
@@ -114,7 +114,7 @@ export default async function AdminDashboardPage() {
 
       {/* Middle row: Chart + Needs Attention */}
       {stats.totalMembers > 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           {/* Completion chart */}
           <div className="lg:col-span-3 rounded-xl bg-white p-5 shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_2px_4px_rgba(0,0,0,0.05),0_12px_24px_rgba(0,0,0,0.05)]">
             <div className="flex items-center justify-between mb-5">
@@ -197,7 +197,8 @@ export default async function AdminDashboardPage() {
             No activity yet. Changes will appear here as members update itineraries.
           </div>
         ) : (
-          <table className="w-full">
+          <div className="overflow-x-auto">
+          <table className="w-full min-w-[480px]">
             <thead>
               <tr className="border-b border-gray-100">
                 <th className="px-5 py-2.5 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Fields Changed</th>
@@ -215,7 +216,7 @@ export default async function AdminDashboardPage() {
 
                 return (
                   <tr key={entry.id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-5 py-3">
+                    <td className="px-5 py-3.5">
                       <div className="flex items-center gap-2">
                         <span className="inline-flex items-center gap-1 text-sm text-gray-900 font-medium">
                           {label}
@@ -227,7 +228,7 @@ export default async function AdminDashboardPage() {
                         )}
                       </div>
                     </td>
-                    <td className="px-5 py-3 hidden sm:table-cell">
+                    <td className="px-5 py-3.5 hidden sm:table-cell">
                       {firstField && entry.changes[firstField] && (
                         <div className="flex items-center gap-1.5 text-xs text-gray-500">
                           <span className="text-gray-400 line-through max-w-[80px] truncate">{String(entry.changes[firstField].old || "empty")}</span>
@@ -236,7 +237,7 @@ export default async function AdminDashboardPage() {
                         </div>
                       )}
                     </td>
-                    <td className="px-5 py-3 text-right">
+                    <td className="px-5 py-3.5 text-right">
                       <span className="text-xs text-gray-400 whitespace-nowrap">{timeStr}</span>
                     </td>
                   </tr>
@@ -244,6 +245,7 @@ export default async function AdminDashboardPage() {
               })}
             </tbody>
           </table>
+          </div>
         )}
       </div>
     </div>
@@ -279,7 +281,7 @@ function StatCard({ label, value, icon: Icon, iconBg, iconColor, footer }: {
           <Icon className={`h-4 w-4 ${iconColor}`} />
         </div>
       </div>
-      <p className="text-[28px] font-bold text-gray-900 tracking-tight leading-none tabular-nums">{value}</p>
+      <p className="text-xl sm:text-[28px] font-bold text-gray-900 tracking-tight leading-none tabular-nums">{value}</p>
       {footer && (
         <p className="text-[11px] mt-2.5 flex items-center gap-1">
           {footer}

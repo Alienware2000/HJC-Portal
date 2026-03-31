@@ -58,14 +58,14 @@ export function Header({ role, eventName }: HeaderProps) {
   return (
     <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-gray-200/60">
       <div className="flex items-center justify-between h-[52px] px-5 lg:px-8">
-        <div className="flex items-center gap-2 text-sm pl-10 lg:pl-0">
+        <div className="flex items-center gap-2 text-sm pl-12 lg:pl-0">
           <span className="text-gray-500">{BREADCRUMB_ROOT[role]}</span>
           <span className="text-gray-300">/</span>
           <span className="font-medium text-gray-900">{pageTitle}</span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 pr-[max(0px,var(--safe-right))]">
           {eventName && (
-            <div className="flex items-center gap-1.5 text-xs text-emerald-600">
+            <div className="hidden sm:flex items-center gap-1.5 text-xs text-emerald-600">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
               {eventName}
             </div>
