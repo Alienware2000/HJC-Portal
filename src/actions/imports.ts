@@ -1,5 +1,6 @@
 "use server";
 
+import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -18,15 +19,30 @@ interface ImportResult {
   errors: { row: number; message: string }[];
 }
 
+const MAX_IMPORT_ROWS = 1000;
+const nameSchema = z.string().min(2).max(200).trim();
+
 export async function importMembers(rows: ImportRow[]): Promise<ImportResult> {
+  if (rows.length > MAX_IMPORT_ROWS) {
+    return { created: 0, updated: 0, skipped: 0, errors: [{ row: 0, message: `Too many rows (max ${MAX_IMPORT_ROWS})` }] };
+  }
+
   const supabase = await createClient();
   const admin = createAdminClient();
 
-  // Verify caller is admin
+  // Verify caller is admin via profiles table (authoritative source)
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user || user.user_metadata?.role !== "admin") {
+  if (!user) {
+    return { created: 0, updated: 0, skipped: 0, errors: [{ row: 0, message: "Unauthorized" }] };
+  }
+  const { data: callerProfile } = await admin
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+  if (!callerProfile || callerProfile.role !== "admin") {
     return { created: 0, updated: 0, skipped: 0, errors: [{ row: 0, message: "Unauthorized" }] };
   }
 
@@ -45,11 +61,13 @@ export async function importMembers(rows: ImportRow[]): Promise<ImportResult> {
 
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
-    const name = row.board_member_name?.trim();
-    if (!name) {
-      result.errors.push({ row: i + 1, message: "Missing board member name" });
+    const rawName = row.board_member_name?.trim();
+    const nameResult = nameSchema.safeParse(rawName);
+    if (!nameResult.success) {
+      result.errors.push({ row: i + 1, message: "Invalid or missing board member name (2-200 chars)" });
       continue;
     }
+    const name = nameResult.data;
 
     try {
       // Check if access code already exists
@@ -83,18 +101,18 @@ export async function importMembers(rows: ImportRow[]): Promise<ImportResult> {
       if (!accessCode) {
         const nameParts = name.split(/\s+/);
         const lastName = nameParts[nameParts.length - 1].toUpperCase();
-        accessCode = `${lastName}-${event.year}`;
+        const baseCode = `${lastName}-${event.year}`;
 
-        // Check uniqueness
+        // Check if base code is taken, add random suffix if needed
         const { data: existingCodes } = await supabase
           .from("access_codes")
           .select("code")
           .eq("event_id", event.id)
-          .like("code", `${accessCode}%`);
+          .eq("code", baseCode);
 
-        if (existingCodes && existingCodes.length > 0) {
-          accessCode = `${accessCode}-${existingCodes.length + 1}`;
-        }
+        accessCode = existingCodes && existingCodes.length > 0
+          ? `${baseCode}-${Math.random().toString(36).substring(2, 5).toUpperCase()}`
+          : baseCode;
       }
 
       // Create access code
@@ -160,12 +178,23 @@ export async function importMembers(rows: ImportRow[]): Promise<ImportResult> {
 
       if (pm) {
         const itineraryFields = extractItineraryFields(row);
-        await admin.from("itineraries").insert({
-          party_member_id: pm.id,
-          board_member_id: bm.id,
-          event_id: event.id,
-          ...itineraryFields,
-        });
+        if (Object.keys(itineraryFields).length > 0) {
+          // Validate itinerary fields against schema
+          const { itinerarySchema } = await import("@/lib/validations/itinerary");
+          const parsed = itinerarySchema.partial().safeParse(itineraryFields);
+          await admin.from("itineraries").insert({
+            party_member_id: pm.id,
+            board_member_id: bm.id,
+            event_id: event.id,
+            ...(parsed.success ? parsed.data : {}),
+          });
+        } else {
+          await admin.from("itineraries").insert({
+            party_member_id: pm.id,
+            board_member_id: bm.id,
+            event_id: event.id,
+          });
+        }
       }
 
       result.created++;

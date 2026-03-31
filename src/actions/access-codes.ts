@@ -31,29 +31,20 @@ export async function generateAccessCode(boardMemberName: string) {
   const event = await getActiveEvent();
   if (!event) return { error: "No active event" };
 
-  // Generate code: LASTNAME-YEAR
+  // Generate code: LASTNAME-YEAR with random suffix to avoid race conditions
   const nameParts = boardMemberName.trim().split(/\s+/);
   const lastName = nameParts[nameParts.length - 1].toUpperCase();
-  let code = `${lastName}-${event.year}`;
+  const baseCode = `${lastName}-${event.year}`;
 
-  // Check if code already exists, add suffix if needed
-  const { data: existing } = await supabase
-    .from("access_codes")
-    .select("code")
-    .eq("event_id", event.id)
-    .like("code", `${code}%`);
-
-  if (existing && existing.length > 0) {
-    code = `${code}-${existing.length + 1}`;
-  }
-
-  // Try insert — retry with incremented suffix on unique conflict
+  // Try base code first, then add random suffixes on conflict
   let attempts = 0;
   let data = null;
   let lastError = null;
 
-  while (attempts < 3) {
-    const tryCode = attempts === 0 ? code : `${code}-${attempts + 1}`;
+  while (attempts < 5) {
+    const tryCode = attempts === 0
+      ? baseCode
+      : `${baseCode}-${Math.random().toString(36).substring(2, 5).toUpperCase()}`;
     const result = await supabase
       .from("access_codes")
       .insert({
@@ -69,7 +60,7 @@ export async function generateAccessCode(boardMemberName: string) {
       break;
     }
 
-    // If unique violation, retry with next suffix
+    // If unique violation, retry with random suffix
     if (result.error.code === "23505") {
       attempts++;
       lastError = result.error;
