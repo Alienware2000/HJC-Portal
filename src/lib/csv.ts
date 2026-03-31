@@ -20,6 +20,10 @@ export function generateCSV(
 }
 
 function escapeCSV(value: string): string {
+  // Neutralize formula-triggering characters to prevent CSV injection (OWASP CWE-1236)
+  if (/^[=+\-@\t\r]/.test(value)) {
+    value = "'" + value;
+  }
   if (value.includes(",") || value.includes('"') || value.includes("\n")) {
     return `"${value.replace(/"/g, '""')}"`;
   }
