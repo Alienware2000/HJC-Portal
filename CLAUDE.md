@@ -4,11 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Healing Jesus Conference Portal — a Next.js 15 web app replacing Google Sheets for managing conference attendee itineraries (150-500 board members annually in Ghana). Three user roles: Board Members (access code auth), Admin (email/password, full control), Staff (email/password, read-only).
+Healing Jesus Conference Portal — a Next.js 16 web app replacing Google Sheets for managing conference attendee itineraries (150-500 board members annually in Ghana). Three user roles: Board Members (access code auth), Admin (email/password, full control), Staff (email/password, read-only).
 
 ## Tech Stack
 
-- **Framework**: Next.js 15 (App Router) + React 19 + TypeScript
+- **Framework**: Next.js 16 (App Router) + React 19 + TypeScript
 - **Styling**: Tailwind CSS v4 + shadcn/ui
 - **Backend/DB**: Supabase (PostgreSQL, Auth, Realtime, Edge Functions)
 - **Forms**: react-hook-form + zod validation
@@ -36,7 +36,7 @@ npx supabase migration new <name>  # Create new migration file
 Three auth flows, all through Supabase Auth:
 - **Board members**: Access code (e.g., `SMITH-2026`) → converted to synthetic email (`SMITH-2026@conference.internal`) with code as password. Auto-provisions board_members, party_members, and itineraries on first login.
 - **Staff/Admin**: Standard email + password via `supabase.auth.admin.createUser()`.
-- **Route protection**: `middleware.ts` refreshes sessions and reads role from JWT custom claims (no DB call) to enforce `/member/*`, `/admin/*`, `/staff/*` access.
+- **Route protection**: `proxy.ts` (Next.js 16 convention, replaces middleware.ts) refreshes sessions and reads role from JWT custom claims (no DB call) to enforce `/member/*`, `/admin/*`, `/staff/*` access.
 
 ### App Router Layout
 
