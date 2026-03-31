@@ -72,6 +72,15 @@ export async function deletePartyMember(partyMemberId: string) {
     .single();
 
   if (!pm) return { error: "Party member not found" };
+
+  // Defense-in-depth: verify ownership explicitly
+  const bmData = Array.isArray(pm.board_members)
+    ? pm.board_members[0]
+    : pm.board_members;
+  if (!bmData || bmData.user_id !== user.id) {
+    return { error: "Unauthorized: you do not own this party member" };
+  }
+
   if (pm.relationship === "self") return { error: "Cannot remove yourself" };
 
   const { error } = await supabase

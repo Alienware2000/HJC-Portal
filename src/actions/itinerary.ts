@@ -86,16 +86,11 @@ export async function updateItineraryFields(
   }
 
   // Strip computed and system fields — defense-in-depth
-  const {
-    completion_pct: _cp,
-    id: _id,
-    party_member_id: _pm,
-    board_member_id: _bm,
-    event_id: _ev,
-    created_at: _ca,
-    updated_at: _ua,
-    ...safeData
-  } = parseResult.data as Record<string, unknown>;
+  const SYSTEM_FIELDS = new Set(["completion_pct", "id", "party_member_id", "board_member_id", "event_id", "created_at", "updated_at"]);
+  const safeData: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(parseResult.data as Record<string, unknown>)) {
+    if (!SYSTEM_FIELDS.has(key)) safeData[key] = value;
+  }
 
   if (Object.keys(safeData).length === 0) {
     return { error: "No valid fields to update" };

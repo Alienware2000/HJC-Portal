@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Loader2, Check } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { changeOwnPassword } from "@/actions/team";
 

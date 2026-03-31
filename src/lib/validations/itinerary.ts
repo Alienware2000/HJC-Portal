@@ -135,7 +135,7 @@ export const FIELD_LABELS: Record<string, string> = {
 
 export const partyMemberSchema = z.object({
   name: z.string().min(1, "Name is required").max(200),
-  relationship: z.string().min(1, "Relationship is required"),
+  relationship: z.enum(["spouse", "child", "guest", "other"], { message: "Select a relationship" }),
 });
 
 export type PartyMemberInput = z.infer<typeof partyMemberSchema>;

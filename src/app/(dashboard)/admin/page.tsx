@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { Users, KeyRound, BarChart3, Activity, ArrowRight, TrendingUp, AlertTriangle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getDashboardStats, getRecentActivity, getCompletionDistribution } from "@/actions/members";
-import { ActivityFeed } from "@/components/admin/activity-feed";
 import { FIELD_LABELS } from "@/lib/validations/itinerary";
 
 export const metadata = { title: "Admin Dashboard — Healing Jesus Conference" };

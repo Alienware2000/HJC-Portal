@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { generateCSV } from "@/lib/csv";
 import {
   getFullExportData,
@@ -95,7 +96,18 @@ export async function GET(
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user || user.user_metadata?.role !== "admin") {
+  if (!user) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  // Verify admin role via profiles table (authoritative source)
+  const adminClient = createAdminClient();
+  const { data: profile } = await adminClient
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+  if (!profile || profile.role !== "admin") {
     return new Response("Unauthorized", { status: 401 });
   }
 

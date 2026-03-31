@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getActiveEvent } from "@/actions/members";
 
 interface ExportRow {
@@ -14,9 +15,17 @@ interface ExportRow {
 async function fetchAllData(): Promise<ExportRow[]> {
   const supabase = await createClient();
 
-  // Verify admin role
+  // Verify admin role via profiles table (authoritative source)
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user || user.user_metadata?.role !== "admin") return [];
+  if (!user) return [];
+
+  const adminClient = createAdminClient();
+  const { data: profile } = await adminClient
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+  if (!profile || profile.role !== "admin") return [];
 
   const event = await getActiveEvent();
   if (!event) return [];

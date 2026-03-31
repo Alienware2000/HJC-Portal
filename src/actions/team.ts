@@ -14,7 +14,17 @@ import {
 async function requireAdmin() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user || user.user_metadata?.role !== "admin") {
+  if (!user) throw new Error("Unauthorized");
+
+  // Use profiles table as authoritative role source (matches JWT hook)
+  const admin = createAdminClient();
+  const { data: profile } = await admin
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile || profile.role !== "admin") {
     throw new Error("Unauthorized");
   }
   return user;
@@ -28,7 +38,10 @@ export async function getTeamMembers() {
     .in("role", ["admin", "staff"])
     .order("created_at", { ascending: false });
 
-  if (error) return { data: [] };
+  if (error) {
+    console.error("[getTeamMembers] Failed to fetch:", error.message);
+    return { data: [], error: error.message };
+  }
   return { data: data || [] };
 }
 
@@ -63,6 +76,32 @@ export async function createTeamMember(input: {
     return { error: error.message };
   }
 
+  // Verify profile was created by trigger; create explicitly if missing
+  const { data: profile } = await admin
+    .from("profiles")
+    .select("role")
+    .eq("id", data.user.id)
+    .single();
+
+  if (!profile) {
+    const { error: profileError } = await admin.from("profiles").insert({
+      id: data.user.id,
+      role,
+      full_name: fullName,
+      email,
+    });
+    if (profileError) {
+      // Clean up orphan auth user
+      await admin.auth.admin.deleteUser(data.user.id);
+      return { error: "Failed to set up user profile. Please try again." };
+    }
+  } else if (profile.role !== role) {
+    await admin
+      .from("profiles")
+      .update({ role, full_name: fullName })
+      .eq("id", data.user.id);
+  }
+
   revalidatePath("/admin/team");
   return { data: data.user };
 }
@@ -74,7 +113,7 @@ export async function updateTeamMemberRole(input: {
   const parsed = updateRoleSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.errors[0].message };
 
-  const caller = await requireAdmin();
+  await requireAdmin();
   const { userId, newRole } = parsed.data;
 
   const admin = createAdminClient();
