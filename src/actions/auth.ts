@@ -23,12 +23,8 @@ export async function loginWithAccessCode(code: string) {
     .eq("code", normalizedCode)
     .single();
 
-  if (codeError || !accessCode) {
+  if (codeError || !accessCode || !accessCode.events?.is_active) {
     return { error: "Invalid access code. Please check and try again." };
-  }
-
-  if (!accessCode.events?.is_active) {
-    return { error: "This access code belongs to an inactive event." };
   }
 
   // 2. Build synthetic email and attempt sign-in
@@ -41,8 +37,10 @@ export async function loginWithAccessCode(code: string) {
     password,
   });
 
+  let userId: string;
+
   if (signInError) {
-    // New user — create account and provision records
+    // New user — create account
     const { data: newUser, error: createError } =
       await admin.auth.admin.createUser({
         email: syntheticEmail,
@@ -58,12 +56,29 @@ export async function loginWithAccessCode(code: string) {
       return { error: "Failed to create account. Please try again." };
     }
 
+    userId = newUser.user.id;
+  } else {
+    // Returning user — get their ID
+    const { data: { user: existingUser } } = await supabase.auth.getUser();
+    if (!existingUser) return { error: "Authentication failed." };
+    userId = existingUser.id;
+  }
+
+  // Check if provisioning is complete (handles both new users and partial failure recovery)
+  const { data: existingBm } = await admin
+    .from("board_members")
+    .select("id, party_members(id, itineraries(id))")
+    .eq("user_id", userId)
+    .eq("event_id", accessCode.event_id)
+    .single();
+
+  if (!existingBm) {
     // Provision board_member, party_member (self), and itinerary
     const { data: boardMember, error: bmError } = await admin
       .from("board_members")
       .insert({
         event_id: accessCode.event_id,
-        user_id: newUser.user.id,
+        user_id: userId,
         access_code_id: accessCode.id,
         name: accessCode.board_member_name,
         email: syntheticEmail,
@@ -110,8 +125,53 @@ export async function loginWithAccessCode(code: string) {
     if (itError) {
       return { error: "Failed to create itinerary. Please contact admin." };
     }
+  } else {
+    // Board member exists — check if party member and itinerary exist
+    const partyMembers = Array.isArray(existingBm.party_members) ? existingBm.party_members : [];
+    if (partyMembers.length === 0) {
+      const { data: partyMember, error: pmError } = await admin
+        .from("party_members")
+        .insert({
+          board_member_id: existingBm.id,
+          name: accessCode.board_member_name,
+          relationship: "self",
+        })
+        .select()
+        .single();
 
-    // Now sign in with the newly created account
+      if (pmError || !partyMember) {
+        return { error: "Failed to recover party member. Please contact admin." };
+      }
+
+      const { error: itRecoverError } = await admin.from("itineraries").insert({
+        party_member_id: partyMember.id,
+        board_member_id: existingBm.id,
+        event_id: accessCode.event_id,
+      });
+
+      if (itRecoverError) {
+        return { error: "Failed to recover itinerary. Please contact admin." };
+      }
+    } else {
+      // Check if itinerary exists for the self party member
+      const selfPm = partyMembers[0];
+      const itineraries = Array.isArray(selfPm.itineraries) ? selfPm.itineraries : selfPm.itineraries ? [selfPm.itineraries] : [];
+      if (itineraries.length === 0) {
+        const { error: itFixError } = await admin.from("itineraries").insert({
+          party_member_id: selfPm.id,
+          board_member_id: existingBm.id,
+          event_id: accessCode.event_id,
+        });
+
+        if (itFixError) {
+          return { error: "Failed to recover itinerary. Please contact admin." };
+        }
+      }
+    }
+  }
+
+  // Sign in if we created a new user (wasn't signed in yet)
+  if (signInError) {
     const { error: newSignInError } = await supabase.auth.signInWithPassword({
       email: syntheticEmail,
       password,
@@ -151,7 +211,15 @@ export async function loginWithEmail(email: string, password: string, role: Role
     return { error: "Authentication failed." };
   }
 
-  const userRole = user.user_metadata?.role as Role | undefined;
+  // Use profiles table as authoritative role source (matches JWT hook)
+  const adminClient = createAdminClient();
+  const { data: profile } = await adminClient
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  const userRole = profile?.role as Role | undefined;
 
   if (!userRole || userRole !== role) {
     await supabase.auth.signOut();
