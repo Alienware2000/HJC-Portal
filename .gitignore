@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# supabase CLI workspace state (linked-project ref, local version pins)
+supabase/.temp/
+
+# real-data CSVs are PII (emails, phone numbers of board members) — never commit
+*.csv
+*.csv:Zone.Identifier
+
