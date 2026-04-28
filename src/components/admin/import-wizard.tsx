@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useTransition, useRef } from "react";
-import { Upload, ArrowRight, ArrowLeft, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { useState, useRef } from "react";
+import { Upload, ArrowRight, ArrowLeft, CheckCircle2, AlertCircle, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 
 import { parseCSV } from "@/lib/parse-csv";
 import { autoMapColumns, IMPORTABLE_FIELDS } from "@/lib/import-mapper";
-import { importMembers } from "@/actions/imports";
 
 type Step = "upload" | "mapping" | "preview" | "importing" | "results";
 
@@ -18,13 +17,32 @@ interface ImportResult {
   errors: { row: number; message: string }[];
 }
 
+interface ImportProgress {
+  created: number;
+  updated: number;
+  skipped: number;
+  errorCount: number;
+  total: number;
+  current: string | null;
+  elapsedMs: number;
+}
+
+function formatDuration(ms: number): string {
+  if (ms < 1000) return "< 1s";
+  const totalSeconds = Math.round(ms / 1000);
+  if (totalSeconds < 60) return `${totalSeconds}s`;
+  const m = Math.floor(totalSeconds / 60);
+  const s = totalSeconds % 60;
+  return s === 0 ? `${m}m` : `${m}m ${s}s`;
+}
+
 export function ImportWizard() {
   const [step, setStep] = useState<Step>("upload");
   const [headers, setHeaders] = useState<string[]>([]);
   const [rows, setRows] = useState<Record<string, string>[]>([]);
   const [mapping, setMapping] = useState<Record<string, string>>({});
   const [result, setResult] = useState<ImportResult | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const [progress, setProgress] = useState<ImportProgress | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,7 +81,7 @@ export function ImportWizard() {
     });
   };
 
-  const handleImport = () => {
+  const handleImport = async () => {
     const mapped = getMappedRows();
     const valid = mapped.filter((r) => r.board_member_name);
     if (valid.length === 0) {
@@ -71,19 +89,79 @@ export function ImportWizard() {
       return;
     }
 
-    startTransition(async () => {
-      setStep("importing");
-      try {
-        const res = await importMembers(
-          valid as { board_member_name: string; [key: string]: unknown }[]
-        );
-        setResult(res);
-        setStep("results");
-      } catch {
-        toast.error("Import failed unexpectedly. Please try again.");
-        setStep("preview");
-      }
+    setStep("importing");
+    setProgress({
+      created: 0,
+      updated: 0,
+      skipped: 0,
+      errorCount: 0,
+      total: valid.length,
+      current: null,
+      elapsedMs: 0,
     });
+
+    try {
+      const response = await fetch("/api/imports/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rows: valid }),
+      });
+
+      if (!response.ok || !response.body) {
+        const text = await response.text().catch(() => "");
+        toast.error(text || `Import failed (HTTP ${response.status})`);
+        setStep("preview");
+        return;
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex = buffer.indexOf("\n");
+        while (newlineIndex !== -1) {
+          const line = buffer.slice(0, newlineIndex).trim();
+          buffer = buffer.slice(newlineIndex + 1);
+          newlineIndex = buffer.indexOf("\n");
+          if (!line) continue;
+          try {
+            const evt = JSON.parse(line);
+            if (evt.type === "progress") {
+              setProgress({
+                created: evt.created,
+                updated: evt.updated,
+                skipped: evt.skipped,
+                errorCount: evt.errorCount,
+                total: evt.total,
+                current: evt.current ?? null,
+                elapsedMs: evt.elapsedMs,
+              });
+            } else if (evt.type === "done") {
+              setResult({
+                created: evt.created,
+                updated: evt.updated,
+                skipped: evt.skipped,
+                errors: evt.errors ?? [],
+              });
+              setStep("results");
+            } else if (evt.type === "fatal") {
+              toast.error(evt.message || "Import failed");
+              setStep("preview");
+            }
+          } catch {
+            // Ignore malformed line; the next chunk may complete it.
+          }
+        }
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Import failed unexpectedly. Please try again.");
+      setStep("preview");
+    }
   };
 
   const reset = () => {
@@ -92,6 +170,7 @@ export function ImportWizard() {
     setRows([]);
     setMapping({});
     setResult(null);
+    setProgress(null);
     if (fileRef.current) fileRef.current.value = "";
   };
 
@@ -231,7 +310,7 @@ export function ImportWizard() {
           <button onClick={() => setStep("mapping")} className="h-10 px-4 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 focus-visible:ring-2 focus-visible:ring-ring/50 transition-all flex items-center gap-1">
             <ArrowLeft className="h-3.5 w-3.5" /> Back
           </button>
-          <button onClick={handleImport} disabled={isPending} className="h-10 px-4 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 active:bg-gray-950 focus-visible:ring-2 focus-visible:ring-ring/50 disabled:opacity-50 disabled:pointer-events-none transition-all">
+          <button onClick={handleImport} className="h-10 px-4 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 active:bg-gray-950 focus-visible:ring-2 focus-visible:ring-ring/50 disabled:opacity-50 disabled:pointer-events-none transition-all">
             Import {validCount} Members
           </button>
         </div>
@@ -240,12 +319,61 @@ export function ImportWizard() {
   }
 
   if (step === "importing") {
+    const total = progress?.total ?? 0;
+    const completed = (progress?.created ?? 0) + (progress?.updated ?? 0) + (progress?.skipped ?? 0) + (progress?.errorCount ?? 0);
+    const pct = total > 0 ? Math.min(100, Math.round((completed / total) * 100)) : 0;
+    const elapsed = progress?.elapsedMs ?? 0;
+    const remaining = completed > 0 && completed < total
+      ? Math.round((elapsed / completed) * (total - completed))
+      : 0;
+
     return (
       <div>
         {stepIndicator}
-        <div className="rounded-xl border border-gray-200 bg-white py-16 text-center shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto text-blue-500" />
-          <p className="mt-4 text-[14px] text-gray-500">Importing members...</p>
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 p-1 shadow-[0_2px_8px_rgba(37,99,235,0.15),0_24px_48px_rgba(37,99,235,0.12)]">
+          <div className="rounded-[14px] bg-white p-6 sm:p-7">
+            <div className="flex items-start gap-3">
+              <div className="hidden sm:flex h-10 w-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 items-center justify-center shrink-0 shadow-[0_4px_12px_rgba(37,99,235,0.3)]">
+                <Sparkles className="h-4 w-4 text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[16px] font-bold text-gray-900 tracking-tight">Importing your roster</p>
+                <p className="text-[13px] text-gray-500 mt-0.5">
+                  {progress?.current ? <>Working on <span className="font-medium text-gray-700">{progress.current}</span></> : <>Setting things up…</>}
+                </p>
+              </div>
+              <div className="text-right tabular-nums shrink-0">
+                <p className="text-[24px] font-bold text-gray-900 leading-none">{pct}<span className="text-[14px] text-gray-400 font-normal">%</span></p>
+                <p className="text-[11px] text-gray-400 mt-1">{completed} / {total}</p>
+              </div>
+            </div>
+
+            {/* Progress bar */}
+            <div className="mt-4 h-2 rounded-full bg-gray-100 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-[width] duration-500 ease-out"
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+
+            {/* Stats row */}
+            <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2 text-[13px]">
+              <Stat label="Created" value={progress?.created ?? 0} accent="text-emerald-600" />
+              <Stat label="Updated" value={progress?.updated ?? 0} accent="text-blue-600" />
+              <Stat label="Skipped" value={progress?.skipped ?? 0} accent="text-gray-500" />
+              <Stat label="Errors" value={progress?.errorCount ?? 0} accent={(progress?.errorCount ?? 0) > 0 ? "text-red-600" : "text-gray-400"} />
+            </div>
+
+            {/* Time meta */}
+            <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-[12px] text-gray-400 tabular-nums">
+              <span>Elapsed: <span className="text-gray-600 font-medium">{formatDuration(elapsed)}</span></span>
+              <span>{remaining > 0 ? <>~ <span className="text-gray-600 font-medium">{formatDuration(remaining)}</span> remaining</> : "Estimating…"}</span>
+            </div>
+
+            <p className="mt-3 text-[12px] text-gray-400">
+              Keep this tab open. Each member needs an auth account, so this takes a minute or two.
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -294,4 +422,13 @@ export function ImportWizard() {
   }
 
   return null;
+}
+
+function Stat({ label, value, accent }: { label: string; value: number; accent: string }) {
+  return (
+    <div className="rounded-lg bg-gray-50 px-3 py-2">
+      <p className={`text-[18px] font-bold tabular-nums leading-none ${accent}`}>{value}</p>
+      <p className="text-[11px] text-gray-400 mt-1 uppercase tracking-[0.06em]">{label}</p>
+    </div>
+  );
 }
