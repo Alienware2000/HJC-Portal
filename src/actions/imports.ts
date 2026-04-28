@@ -82,17 +82,26 @@ export async function importMembers(rows: ImportRow[]): Promise<ImportResult> {
           .single();
 
         if (existing?.is_used && existing.board_member_id) {
-          // Update existing member's itinerary
+          // Update existing member's directory fields and itinerary
+          const bmFields = extractBoardMemberFields(row);
           const itineraryFields = extractItineraryFields(row);
+          let didUpdate = false;
+          if (Object.keys(bmFields).length > 0) {
+            await admin
+              .from("board_members")
+              .update(bmFields)
+              .eq("id", existing.board_member_id);
+            didUpdate = true;
+          }
           if (Object.keys(itineraryFields).length > 0) {
             await supabase
               .from("itineraries")
               .update(itineraryFields)
               .eq("board_member_id", existing.board_member_id);
-            result.updated++;
-          } else {
-            result.skipped++;
+            didUpdate = true;
           }
+          if (didUpdate) result.updated++;
+          else result.skipped++;
           continue;
         }
       }
@@ -145,7 +154,8 @@ export async function importMembers(rows: ImportRow[]): Promise<ImportResult> {
         continue;
       }
 
-      // Create board member
+      // Create board member (with directory fields from CSV row)
+      const bmFields = extractBoardMemberFields(row);
       const { data: bm, error: bmErr } = await admin
         .from("board_members")
         .insert({
@@ -154,6 +164,7 @@ export async function importMembers(rows: ImportRow[]): Promise<ImportResult> {
           access_code_id: codeRecord.id,
           name,
           email,
+          ...bmFields,
         })
         .select()
         .single();
@@ -210,6 +221,53 @@ export async function importMembers(rows: ImportRow[]): Promise<ImportResult> {
   revalidatePath("/admin/access-codes");
   revalidatePath("/admin");
   return result;
+}
+
+function extractBoardMemberFields(row: Record<string, unknown>): Record<string, unknown> {
+  const fields: Record<string, unknown> = {};
+
+  const trimStr = (v: unknown): string | null => {
+    if (typeof v !== "string") return null;
+    const s = v.trim();
+    return s === "" ? null : s;
+  };
+
+  const phone = trimStr(row.phone);
+  if (phone) fields.phone = phone;
+
+  const contactEmailRaw = trimStr(row.contact_email);
+  if (contactEmailRaw) {
+    // Split on comma/semicolon, normalize, drop malformed (no @), dedupe.
+    const seen = new Set<string>();
+    const emails: string[] = [];
+    for (const part of contactEmailRaw.split(/[,;]/)) {
+      const e = part.trim().toLowerCase();
+      if (!e || !e.includes("@") || seen.has(e)) continue;
+      seen.add(e);
+      emails.push(e);
+    }
+    if (emails.length > 0) fields.contact_emails = emails;
+  }
+
+  const country = trimStr(row.country);
+  if (country) fields.country = country;
+
+  const city = trimStr(row.city);
+  if (city) fields.city = city;
+
+  const language = trimStr(row.language);
+  if (language) fields.language = language;
+
+  const ministry = trimStr(row.ministry);
+  if (ministry) fields.ministry = ministry;
+
+  const yearStr = trimStr(row.year_joined);
+  if (yearStr) {
+    const n = parseInt(yearStr, 10);
+    if (!Number.isNaN(n) && n >= 1900 && n <= 2100) fields.year_joined = n;
+  }
+
+  return fields;
 }
 
 function extractItineraryFields(row: Record<string, unknown>): Record<string, unknown> {

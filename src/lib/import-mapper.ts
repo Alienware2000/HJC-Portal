@@ -2,6 +2,13 @@ export const IMPORTABLE_FIELDS = [
   { value: "__skip__", label: "— Skip this column —" },
   { value: "board_member_name", label: "Board Member Name" },
   { value: "access_code", label: "Access Code" },
+  { value: "phone", label: "Phone Number" },
+  { value: "contact_email", label: "Contact Email" },
+  { value: "country", label: "Country" },
+  { value: "city", label: "City" },
+  { value: "language", label: "Language" },
+  { value: "ministry", label: "Ministry" },
+  { value: "year_joined", label: "Year Joined" },
   { value: "arrival_date", label: "Arrival Date" },
   { value: "arrival_airline", label: "Arrival Airline" },
   { value: "arrival_flight_number", label: "Arrival Flight Number" },
@@ -32,6 +39,13 @@ export const IMPORTABLE_FIELDS = [
 const FIELD_ALIASES: Record<string, string[]> = {
   board_member_name: ["name", "member", "board member", "full name", "board_member_name", "member_name"],
   access_code: ["code", "access code", "access_code", "login_code", "login code"],
+  phone: ["phone", "phone number", "phone_number", "mobile", "tel", "telephone", "contact number"],
+  contact_email: ["email", "email address", "email_address", "contact email", "contact_email", "e-mail"],
+  country: ["country", "nation"],
+  city: ["city", "town", "location"],
+  language: ["language", "lang", "preferred language"],
+  ministry: ["ministry", "church", "organization", "organisation", "ministry name", "church name"],
+  year_joined: ["yr joined", "yr_joined", "year joined", "year_joined", "joined", "joined year", "year"],
   arrival_date: ["arrival date", "arrival_date", "arrive date"],
   departure_date: ["departure date", "departure_date", "depart date"],
   hotel_preference: ["hotel", "hotel preference", "hotel_preference"],
@@ -56,18 +70,28 @@ export function autoMapColumns(headers: string[]): Record<string, string> {
       continue;
     }
 
-    // Alias match
+    // Alias match (exact-equal first to avoid false substring matches like
+    // "email address" → "address" or "phone" → "passport phone")
     let found = false;
     for (const [field, aliases] of Object.entries(FIELD_ALIASES)) {
-      if (aliases.some((a) => normalized === a.replace(/\s+/g, "_") || normalized.includes(a.replace(/\s+/g, "_")))) {
+      if (aliases.some((a) => normalized === a.replace(/\s+/g, "_"))) {
         mapping[header] = field;
         found = true;
         break;
       }
     }
+    if (!found) {
+      for (const [field, aliases] of Object.entries(FIELD_ALIASES)) {
+        if (aliases.some((a) => normalized.includes(a.replace(/\s+/g, "_")))) {
+          mapping[header] = field;
+          found = true;
+          break;
+        }
+      }
+    }
 
     if (!found) {
-      // Substring match
+      // Substring match against canonical field names
       const substringMatch = IMPORTABLE_FIELDS.find(
         (f) => f.value !== "__skip__" && normalized.includes(f.value.replace(/_/g, ""))
       );
