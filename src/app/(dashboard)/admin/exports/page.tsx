@@ -9,9 +9,30 @@ export default function ExportsPage() {
   const [downloaded, setDownloaded] = useState<Set<string>>(new Set());
 
   const exports = [
-    { type: "all-members", label: "All Members", description: "Names, contact info, access codes, and all itinerary fields", icon: Users, color: "blue" },
-    { type: "rooming-list", label: "Rooming List", description: "Hotel preferences, room types, check-in/out dates, and special requests", icon: Hotel, color: "purple" },
-    { type: "pickup-schedule", label: "Pickup Schedule", description: "Arrival dates, flight numbers, airports, and pickup preferences", icon: Plane, color: "emerald" },
+    {
+      type: "all-members",
+      label: "All Members",
+      description: "Full directory plus itinerary — names, access codes, country, city, language, ministry, year joined, contact emails, phone, and every itinerary field.",
+      fields: ["Directory", "Itinerary", "Travel", "Visa", "Emergency"],
+      icon: Users,
+      color: "blue",
+    },
+    {
+      type: "rooming-list",
+      label: "Rooming List",
+      description: "Hotel preferences, room types, check-in/out dates, and special requests — for hotel coordination.",
+      fields: ["Hotel", "Room", "Dates"],
+      icon: Hotel,
+      color: "purple",
+    },
+    {
+      type: "pickup-schedule",
+      label: "Pickup Schedule",
+      description: "Arrival dates, flight numbers, airports, and pickup preferences — for ground transport teams.",
+      fields: ["Flights", "Airports", "Pickup"],
+      icon: Plane,
+      color: "emerald",
+    },
   ];
 
   const handleExport = async (type: string) => {
@@ -41,8 +62,8 @@ export default function ExportsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-[20px] font-bold text-gray-900 tracking-tight">Exports</h2>
-        <p className="text-sm text-gray-500 mt-1">Download conference data as CSV files.</p>
+        <h2 className="text-[22px] font-bold text-gray-900 tracking-tight">Exports</h2>
+        <p className="text-sm text-gray-500 mt-1">Download conference data as CSV. One row per party member; multi-email contacts are joined with semicolons.</p>
       </div>
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {exports.map((exp) => {
@@ -58,9 +79,14 @@ export default function ExportsPage() {
               <div className={`h-10 w-10 rounded-xl flex items-center justify-center mb-3 ${exp.color === "blue" ? "bg-blue-50" : exp.color === "purple" ? "bg-purple-50" : "bg-emerald-50"}`}>
                 <exp.icon className={`h-5 w-5 ${exp.color === "blue" ? "text-blue-600" : exp.color === "purple" ? "text-purple-600" : "text-emerald-600"}`} />
               </div>
-              <p className="text-sm font-semibold text-gray-900">{exp.label}</p>
-              <p className="text-[13px] text-gray-500 mt-1">{exp.description}</p>
-              <div className="mt-3 flex items-center gap-1 text-xs font-medium">
+              <p className="text-[15px] font-semibold text-gray-900 tracking-tight">{exp.label}</p>
+              <p className="text-[13px] text-gray-500 mt-1 leading-relaxed">{exp.description}</p>
+              <div className="mt-3 flex flex-wrap gap-1">
+                {exp.fields.map((f) => (
+                  <span key={f} className="text-[11px] font-medium text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">{f}</span>
+                ))}
+              </div>
+              <div className="mt-3 pt-3 border-t border-gray-100 flex items-center gap-1 text-xs font-medium">
                 {isDownloading ? (
                   <><Loader2 className="h-3 w-3 animate-spin text-gray-400" /> <span className="text-gray-400">Preparing...</span></>
                 ) : isDone ? (
