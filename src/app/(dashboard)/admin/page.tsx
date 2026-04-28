@@ -3,8 +3,9 @@ import { redirect } from "next/navigation";
 import { Users, KeyRound, BarChart3, Activity, ArrowRight, TrendingUp, AlertTriangle, UsersRound } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getDashboardStats, getRecentActivity, getCompletionDistribution } from "@/actions/members";
+import { getActiveEvent, getDashboardStats, getRecentActivity, getCompletionDistribution } from "@/actions/members";
 import { FIELD_LABELS } from "@/lib/validations/itinerary";
+import { EventSetupCard } from "@/components/admin/event-setup-card";
 
 export const metadata = { title: "Admin Dashboard — Healing Jesus Conference" };
 
@@ -14,6 +15,25 @@ export default async function AdminDashboardPage() {
   if (!user) redirect("/login");
 
   const firstName = (user.user_metadata?.full_name || "Admin").split(" ")[0];
+
+  // Bootstrap gate: with no active event, every other admin action fails
+  // (login-with-code, generate-code, import, export). Show the setup card
+  // and skip the rest of the dashboard.
+  const activeEvent = await getActiveEvent();
+  if (!activeEvent) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-lg sm:text-[22px] font-bold text-gray-900 tracking-tight">
+            Welcome, {firstName} <span className="inline-block ml-0.5">👋</span>
+          </h2>
+          <p className="text-sm text-gray-500 mt-1">Let&apos;s get the platform set up.</p>
+        </div>
+        <EventSetupCard />
+      </div>
+    );
+  }
+
   const admin = createAdminClient();
   const [stats, { data: recentActivity }, distribution, { count: teamCount }] = await Promise.all([
     getDashboardStats(),
