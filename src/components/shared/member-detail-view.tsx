@@ -1,5 +1,9 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Mail, Phone, KeyRound } from "lucide-react";
+import { ArrowLeft, Mail, Phone, KeyRound, MapPin, Languages, Building2, Calendar, Copy, Check } from "lucide-react";
+import { toast } from "sonner";
 import { CompletionBadge } from "@/components/admin/completion-badge";
 import { FIELD_LABELS } from "@/lib/validations/itinerary";
 
@@ -16,6 +20,26 @@ export function MemberDetailView({ member, backHref, backLabel }: MemberDetailVi
   const partyMembers = Array.isArray(member.party_members) ? member.party_members : [];
   const initial = (member.name as string).charAt(0).toUpperCase();
 
+  const contactEmails = Array.isArray(member.contact_emails)
+    ? (member.contact_emails as string[])
+    : [];
+  const country = (member.country as string | null) || null;
+  const city = (member.city as string | null) || null;
+  const language = (member.language as string | null) || null;
+  const ministry = (member.ministry as string | null) || null;
+  const yearJoined = member.year_joined as number | null | undefined;
+  const phone = (member.phone as string | null) || null;
+  const location = [city, country].filter(Boolean).join(", ");
+  const hasDirectory = Boolean(location || language || ministry || yearJoined);
+
+  const [copied, setCopied] = useState<string | null>(null);
+  const handleCopy = (key: string, value: string, label: string) => {
+    navigator.clipboard.writeText(value);
+    setCopied(key);
+    toast.success(`${label} copied`);
+    setTimeout(() => setCopied((k) => (k === key ? null : k)), 2000);
+  };
+
   return (
     <div className="space-y-6">
       <Link href={backHref} className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 focus-visible:ring-2 focus-visible:ring-ring/50 rounded-md px-1 -mx-1 transition-colors">
@@ -29,12 +53,58 @@ export function MemberDetailView({ member, backHref, backLabel }: MemberDetailVi
             <span className="text-[22px] font-bold text-white">{initial}</span>
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-bold text-gray-900">{member.name as string}</h2>
-            <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-sm text-gray-500">
-              {member.email ? <span className="flex items-center gap-1"><Mail className="h-3 w-3" /> {String(member.email)}</span> : null}
-              {member.phone ? <span className="flex items-center gap-1"><Phone className="h-3 w-3" /> {String(member.phone)}</span> : null}
-              {accessCode ? <span className="flex items-center gap-1"><KeyRound className="h-3 w-3" /> <code className="font-mono text-xs bg-gray-100 px-1.5 py-0.5 rounded">{accessCode}</code></span> : null}
+            <h2 className="text-[22px] font-bold text-gray-900 tracking-tight">{member.name as string}</h2>
+            <div className="flex flex-wrap gap-x-4 gap-y-1.5 mt-1.5 text-sm text-gray-500">
+              {contactEmails.length > 0 ? (
+                <span className="flex items-center gap-1.5">
+                  <Mail className="h-3.5 w-3.5" /> {contactEmails.join(", ")}
+                </span>
+              ) : (
+                <span className="flex items-center gap-1.5 italic text-gray-400">
+                  <Mail className="h-3.5 w-3.5" /> No contact email provided
+                </span>
+              )}
+              {phone ? (
+                <button
+                  type="button"
+                  onClick={() => handleCopy("phone", phone, "Phone")}
+                  className="group/p flex items-center gap-1.5 rounded-md hover:bg-gray-100 active:bg-gray-200 transition-colors px-1.5 -mx-1.5 py-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30"
+                  aria-label={copied === "phone" ? "Phone copied" : `Copy phone ${phone}`}
+                >
+                  <Phone className="h-3.5 w-3.5" />
+                  <span className="tabular-nums">{phone}</span>
+                  {copied === "phone" ? (
+                    <Check className="h-3 w-3 text-emerald-500" />
+                  ) : (
+                    <Copy className="h-3 w-3 text-gray-300 group-hover/p:text-gray-500" />
+                  )}
+                </button>
+              ) : null}
+              {accessCode ? (
+                <button
+                  type="button"
+                  onClick={() => handleCopy("code", accessCode, "Code")}
+                  className="group/c flex items-center gap-1.5 rounded-md hover:bg-gray-100 active:bg-gray-200 transition-colors px-1.5 -mx-1.5 py-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30"
+                  aria-label={copied === "code" ? "Code copied" : `Copy code ${accessCode}`}
+                >
+                  <KeyRound className="h-3.5 w-3.5" />
+                  <code className="font-mono text-xs bg-gray-100 px-1.5 py-0.5 rounded">{accessCode}</code>
+                  {copied === "code" ? (
+                    <Check className="h-3 w-3 text-emerald-500" />
+                  ) : (
+                    <Copy className="h-3 w-3 text-gray-300 group-hover/c:text-gray-500" />
+                  )}
+                </button>
+              ) : null}
             </div>
+            {hasDirectory && (
+              <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2.5 text-[13px] text-gray-500">
+                {location ? <span className="flex items-center gap-1.5"><MapPin className="h-3 w-3" /> {location}</span> : null}
+                {language ? <span className="flex items-center gap-1.5"><Languages className="h-3 w-3" /> {language}</span> : null}
+                {ministry ? <span className="flex items-center gap-1.5"><Building2 className="h-3 w-3" /> {ministry}</span> : null}
+                {yearJoined ? <span className="flex items-center gap-1.5"><Calendar className="h-3 w-3" /> Joined {yearJoined}</span> : null}
+              </div>
+            )}
           </div>
           <CompletionBadge pct={Number(member.completion_pct)} />
         </div>
