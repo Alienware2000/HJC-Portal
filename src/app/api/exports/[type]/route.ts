@@ -21,7 +21,12 @@ const EXPORT_CONFIGS: Record<
     columns: [
       { key: "board_member_name", label: "Board Member" },
       { key: "access_code", label: "Access Code" },
-      { key: "board_member_email", label: "Email" },
+      { key: "board_member_country", label: "Country" },
+      { key: "board_member_city", label: "City" },
+      { key: "board_member_language", label: "Language" },
+      { key: "board_member_ministry", label: "Ministry" },
+      { key: "board_member_year_joined", label: "Year Joined" },
+      { key: "board_member_contact_emails", label: "Contact Emails" },
       { key: "board_member_phone", label: "Phone" },
       { key: "party_member_name", label: "Party Member" },
       { key: "relationship", label: "Relationship" },

@@ -53,10 +53,19 @@ async function fetchAllData(): Promise<ExportRow[]> {
           : [];
       const it = itineraries[0] || {};
 
+      const contactEmails = Array.isArray(bm.contact_emails)
+        ? (bm.contact_emails as string[]).join("; ")
+        : "";
+
       rows.push({
         board_member_name: bm.name,
         access_code: code,
-        board_member_email: bm.email || "",
+        board_member_country: bm.country || "",
+        board_member_city: bm.city || "",
+        board_member_language: bm.language || "",
+        board_member_ministry: bm.ministry || "",
+        board_member_year_joined: bm.year_joined || "",
+        board_member_contact_emails: contactEmails,
         board_member_phone: bm.phone || "",
         party_member_name: pm.name,
         relationship: pm.relationship,
