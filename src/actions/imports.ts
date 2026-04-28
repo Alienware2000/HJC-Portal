@@ -54,7 +54,7 @@ export async function importMembers(rows: ImportRow[]): Promise<ImportResult> {
     .single();
 
   if (!event) {
-    return { created: 0, updated: 0, skipped: 0, errors: [{ row: 0, message: "No active event" }] };
+    return { created: 0, updated: 0, skipped: 0, errors: [{ row: 0, message: "No active conference event. Open the admin dashboard to set one up first." }] };
   }
 
   const result: ImportResult = { created: 0, updated: 0, skipped: 0, errors: [] };
